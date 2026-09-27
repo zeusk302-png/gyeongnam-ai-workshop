@@ -1,0 +1,79 @@
+{
+  "name": "김세영",
+  "englishName": "Hugo Se-Young Kim",
+  "role": "㈜파운드리머 기업부설연구소 연구소장",
+  "headline": "R&D 엔지니어 · 기술교육자",
+  "summary": "산업 설비에 쓰이는 임베디드 소프트웨어와 AI를 개발해 왔습니다. 시스템 설계, 시험·검증, 기술 문서 작성과 교육을 담당했습니다.",
+  "photo": "assets/instructor/kim-seyoung.jpg",
+  "website": "https://hugoworld.kr/",
+  "websiteLabel": "hugoworld.kr",
+  "focus": [
+    "산업용 AI · Edge AI",
+    "시스템 개발 · 검증",
+    "AI 도구 활용 교육"
+  ],
+  "experience": [
+    {
+      "period": "2026.02 – 현재",
+      "organization": "㈜파운드리머 기업부설연구소",
+      "position": "연구소장",
+      "detail": "기술전략·R&D 로드맵과 연구소 운영, AI 관광·모빌리티 서비스 PSER 기술개발 총괄"
+    },
+    {
+      "period": "2024 – 2026",
+      "organization": "㈜그리드위즈 E-Mobility 개발팀",
+      "position": "Embedded Software Engineer",
+      "detail": "전기차 충전기 소프트웨어, 표준 통신 연동, 인증 대응과 상호운용 시험"
+    },
+    {
+      "period": "2023",
+      "organization": "수협은행",
+      "position": "전산직렬",
+      "detail": "금융권 전산 업무"
+    }
+  ],
+  "education": [
+    {
+      "name": "부산대학교 대학원 정보융합학과 · 인공지능 전공",
+      "detail": "시각지능 및 인지 연구실 · 컴퓨터 비전·Physical AI 연구"
+    },
+    {
+      "name": "부산대학교 정보컴퓨터공학부",
+      "detail": "컴퓨터공학전공"
+    }
+  ],
+  "projects": [
+    {
+      "title": "산업용 비전 검사 · Edge AI",
+      "detail": "결함 탐지 모델과 카메라·생산 설비를 통합하고 MES·QR 이력추적을 연결"
+    },
+    {
+      "title": "AI 관광·모빌리티 서비스",
+      "detail": "조건을 반영한 일정·장소 추천, 대화형 일정 수정, 장소 데이터 검증과 서비스 품질관리"
+    },
+    {
+      "title": "전기차 충전 시스템",
+      "detail": "충전기 펌웨어, 표준 통신, 시험 도구 개발과 V2G·상호운용 시험"
+    }
+  ],
+  "qualifications": [
+    "정보처리기사",
+    "빅데이터분석기사",
+    "SQL개발자(SQLD)"
+  ],
+  "coursePrinciples": [
+    {
+      "title": "답장·보고서 작성",
+      "detail": "준비된 예제로 답장·회의록·요약·보고서를 작성하고 예산표를 검산합니다."
+    },
+    {
+      "title": "날짜·숫자 확인",
+      "detail": "AI가 쓴 날짜와 표현은 원문과 비교하고, 숫자는 직접 계산합니다."
+    },
+    {
+      "title": "다음에 해 볼 업무 정하기",
+      "detail": "수업 후 직접 써 볼 업무와 도구를 정합니다."
+    }
+  ],
+  "sourceNote": "강사가 제공한 이력서에서 경력과 연구 분야를 정리했습니다."
+}

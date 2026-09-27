@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="교직원을 위한 3시간 생성형 AI 실습. Gemini, NotebookLM, Claude를 직접 사용하고 결과를 검증합니다.">
+  <title>교직원 AI 실무 실습실</title>
+  <link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css"><script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#lesson">본문으로 이동</a>
+  <header class="topbar">
+    <a class="brand" href="#orientation"><span class="brand-mark">AI</span><span>교직원 AI 실습<span class="brand-sub">Gemini · NotebookLM · Claude</span></span></a>
+    <nav aria-label="도구 바로가기" class="tool-links"><span class="tool-links-label">실습 도구</span><a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">Gemini <img class="icon" src="assets/icons/arrow-up-right.svg" alt=""></a><a href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer">NotebookLM <img class="icon" src="assets/icons/arrow-up-right.svg" alt=""></a><a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">Claude <img class="icon" src="assets/icons/arrow-up-right.svg" alt=""></a></nav>
+    <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="course-sidebar"><img class="icon" src="assets/icons/menu.svg" alt="">목차</button>
+  </header>
+  <button id="nav-backdrop" aria-label="수업 목차 닫기" tabindex="-1" hidden></button>
+  <div class="layout"><aside id="course-sidebar" class="sidebar" aria-label="수업 목차">
+    <div class="sidebar-top"><p class="sidebar-kicker">수업 진행</p><div class="course-label">진행 상황 <span>총 180분</span></div><div class="progress-line"><span id="progress-text">0 / 16 완료</span><button id="reset-progress" class="text-button" aria-label="전체 진행 표시 초기화">초기화</button></div><progress id="progress" max="16" value="0" aria-label="실습 진행률"></progress></div>
+    <div class="level-picker" role="group" aria-label="실습자료 버전 선택"><button data-level="intro" aria-pressed="true">입문용</button><button data-level="extended" aria-pressed="false">확장본</button></div><p class="level-help">처음이면 입문용으로 시작하세요.</p>
+    <p class="sidebar-group-label">수업 과정</p><nav id="course-nav" aria-label="실습 순서"></nav>
+    <div class="sidebar-quick"><p class="sidebar-group-label">수업 안내</p><a class="about-link" href="#instructor"><img class="icon" src="assets/icons/graduation-cap.svg" alt="">강사 소개</a><a class="free-link" href="#free-guide"><img class="icon" src="assets/icons/shield-check.svg" alt="">무료 계정 사용 안내</a><a class="resource-link" href="#resources"><img class="icon" src="assets/icons/book-open.svg" alt="">자료실 · 시간표</a></div>
+    <div class="sidebar-bottom"><a class="resource-link" href="downloads/실습자료.zip" download><img class="icon" src="assets/icons/folder-down.svg" alt="">실습자료 전체 받기</a><p class="sidebar-note">설명·실습 170분 · 휴식 10분<br>기록은 이 브라우저에 저장됩니다.</p></div>
+  </aside>
+  <main id="lesson" tabindex="-1"><p class="loading">실습 자료를 불러오는 중입니다.</p></main></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="image-dialog"><form method="dialog"><button aria-label="확대 이미지 닫기">닫기 ×</button></form><img alt=""><p></p></dialog>
+  <dialog id="notes-dialog"><form method="dialog"><button aria-label="검토 기록 창 닫기">닫기 ×</button></form><h2>나의 검토 기록</h2><p>아래 기록을 파일로 받거나, 직접 선택해 복사하세요.</p><textarea id="notes-preview" class="result-box" aria-label="내려받을 전체 검토 기록" readonly></textarea><p><a id="notes-download" class="primary" download="AI실습_나의검토기록.md">기록 파일 내려받기 ↓</a></p></dialog>
+  <noscript>이 실습실은 JavaScript가 필요합니다. <a href="downloads/실습자료.zip">실습자료 내려받기</a></noscript>
+</body>
+</html>

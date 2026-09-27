@@ -1,0 +1,13 @@
+# Publish only the reviewed course website and repository overview.
+/*
+!/.gitignore
+!/README.md
+!/docs/
+
+# Local or credential files must stay outside the public repository.
+**/.DS_Store
+**/Thumbs.db
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
