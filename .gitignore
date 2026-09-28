@@ -1,6 +1,7 @@
 # Publish only the reviewed course website and repository overview.
 /*
 !/.gitignore
+!/.gitattributes
 !/README.md
 !/docs/
 

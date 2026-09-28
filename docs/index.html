@@ -5,7 +5,7 @@
   <meta name="description" content="교직원을 위한 3시간 생성형 AI 실습. Gemini, NotebookLM, Claude를 직접 사용하고 결과를 검증합니다.">
   <title>교직원 AI 실무 실습실</title>
   <link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css"><script src="workshop-extra.js" defer></script><script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=1.8.0"><link rel="stylesheet" href="reading.css?v=1.8.0"><script src="workshop-extra.js?v=1.8.0" defer></script><script src="reading.js?v=1.8.0" defer></script><script src="app.js?v=1.8.0" defer></script>
 </head>
 <body>
   <a class="skip" href="#lesson">본문으로 이동</a>
@@ -24,6 +24,7 @@
   </aside>
   <main id="lesson" tabindex="-1"><p class="loading">실습 자료를 불러오는 중입니다.</p></main></div>
   <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="source-dialog"><form method="dialog"><button aria-label="원문 닫기">닫기 ×</button></form><h2>실습 원문</h2><pre></pre></dialog>
   <dialog id="image-dialog"><form method="dialog"><button aria-label="확대 이미지 닫기">닫기 ×</button></form><img alt=""><p></p></dialog>
   <dialog id="notes-dialog"><form method="dialog"><button aria-label="검토 기록 창 닫기">닫기 ×</button></form><h2>나의 검토 기록</h2><p>아래 기록을 파일로 받거나, 직접 선택해 복사하세요.</p><textarea id="notes-preview" class="result-box" aria-label="내려받을 전체 검토 기록" readonly></textarea><p><a id="notes-download" class="primary" download="AI실습_나의검토기록.md">기록 파일 내려받기 ↓</a></p></dialog>
   <noscript>이 실습실은 JavaScript가 필요합니다. <a href="downloads/실습자료.zip">실습자료 내려받기</a></noscript>
