@@ -674,3 +674,56 @@ dialog h2 { margin: 15px 0 9px; font-size: 25px; }
 .work-brief dt{font-size:12px;font-weight:700;color:#6659a3;margin-bottom:7px}
 .work-brief dd{margin:0;line-height:1.65;font-size:15px;color:#292832}
 @media(max-width:780px){.work-brief dl{grid-template-columns:1fr}.work-brief{padding:20px}}
+
+/* Teaching deck, follow-up work and guided review */
+.teaching-downloads{border-top:2px solid var(--ink);padding-top:28px}
+.teaching-actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}
+.lesson-concept{border-left:3px solid var(--accent);padding-left:24px}
+.lesson-concept h2{font-size:22px}
+.lesson-timing{padding:0;list-style:none;border-top:1px solid var(--line)}
+.lesson-timing li{display:grid;grid-template-columns:58px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.lesson-timing strong{color:var(--accent)}
+.review-questions li{margin:12px 0}
+.worked-example{margin:22px 0;border:1px solid var(--line);border-radius:12px;padding:20px 24px;background:var(--white)}
+.worked-example summary{font-weight:700;cursor:pointer;line-height:1.7}
+.worked-example p,.speaker-notes{white-space:pre-wrap;overflow-wrap:anywhere}
+.example-pair{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:24px 0}
+.example-pair h3{font-size:16px;color:var(--muted)}
+.example-pair>div+div{border-left:1px solid var(--line);padding-left:32px}
+.example-reason{border-top:1px solid var(--line);padding-top:16px}
+.related-practice a{display:flex;justify-content:space-between;gap:20px;text-decoration:none;padding:20px 0;border-bottom:1px solid var(--line)}
+.related-practice span{white-space:nowrap;color:var(--accent)}
+.practice-list{border-top:1px solid var(--line)}
+.practice-row{display:grid;grid-template-columns:42px minmax(0,1fr);column-gap:22px;row-gap:16px;padding:30px 0;border-bottom:1px solid var(--line)}
+.practice-number{font-size:22px;font-weight:700;color:var(--accent);padding-top:3px}
+.practice-row h2{font-size:24px;margin:0 0 14px}
+.practice-row h2 a{text-decoration:none}
+.practice-row p{margin-top:0}
+.practice-go{grid-column:2;justify-self:start;display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:700;min-height:44px}
+.slide-controls{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.slide-controls select{min-width:0;flex:1;max-width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:white;font:inherit;color:var(--ink)}
+.slide-controls button{white-space:nowrap}
+.slide-stage figure{margin:0 0 22px}
+.slide-image{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.slide-stage figcaption{margin-top:12px;font-size:14px;color:var(--muted)}
+.speaker-notes{padding-top:16px;line-height:1.8}
+.slide-focus .sidebar,.slide-focus .topbar,.slide-focus .workspace-top,.slide-focus .lesson-head,.slide-focus .page-links{display:none}
+.slide-focus .layout{display:block}
+.slide-focus main{max-width:1400px;margin:0 auto;padding:20px}
+.slide-focus .slide-stage{margin-top:0}
+.slide-focus .slide-image{max-height:calc(100dvh - 200px);object-fit:contain}
+.slide-focus .teaching-actions{margin:0 0 16px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:780px){
+ .example-pair{grid-template-columns:1fr;gap:14px}
+ .example-pair>div+div{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}
+ .worked-example{padding:18px}
+ .related-practice a{flex-direction:column;gap:8px}
+ .practice-row{grid-template-columns:28px minmax(0,1fr);gap:14px}
+ .practice-row h2{font-size:21px}
+ .slide-controls{flex-wrap:wrap;gap:8px}
+ .slide-controls select{order:-1;flex-basis:100%}
+ .slide-controls button{flex:1}
+ .slide-focus main{padding:14px}
+ .teaching-actions>*{max-width:100%}
+}
