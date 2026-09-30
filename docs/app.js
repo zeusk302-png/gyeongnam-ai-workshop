@@ -1,118 +1,421 @@
 'use strict';
-let data, instructor, extended, freePlans, currentId, toastTimer;
-const storeKey='gn-ai-lab-v1';
-let saved={done:[],notes:{},materialLevel:'extended',materialRevision:2};
-try{const previous=JSON.parse(localStorage.getItem(storeKey)||'{}');saved={...saved,...previous};if(previous.materialRevision!==2){saved.materialLevel='extended';saved.materialRevision=2}}catch{}
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const icon=(name,extra='')=>`<img class="icon ${extra}" src="assets/icons/${name}.svg" alt="" aria-hidden="true">`;
-const fileUrl=f=>'downloads/'+f.split('/').map(encodeURIComponent).join('/');
-const isExtended=()=>saved.materialLevel==='extended';
-const levelName=()=>isExtended()?'업무실습':'기본연습';
-const levelKey=id=>id.startsWith('practice-')?id:isExtended()&&id==='g-email'?'work-v3:g-email':isExtended()&&id!=='orientation'&&id!=='wrap'?'work-v2:'+id:id;
-const stepData=id=>{const base=data.steps.find(s=>s.id===id);return base?{...base,...(isExtended()?extended.steps[id]||{}:{})}:undefined};
-const persist=()=>{try{localStorage.setItem(storeKey,JSON.stringify(saved))}catch{toast('브라우저 저장이 제한되어 있습니다. 결과 기록을 내려받으세요.')}};
-function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600)}
-function downloads(files){return `<div class="download-list">${(files||[]).map(f=>{const name=f.split('/').pop();const title=name.replace(/\.(txt|md|csv)$/i,'').replace(/^\d+[AB]?_/,'').replaceAll('_',' ');return `<a href="${fileUrl(f)}" download>${icon('file-text')}<span><strong>${esc(title)}</strong><small>${esc(name)}</small></span>${icon('folder-down','download-icon')}</a>`}).join('')}</div>`}
-function nav(){
-  document.querySelectorAll('[data-level]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.level===(isExtended()?'extended':'intro'))));
-  for(const [selector,active] of [['.about-link',currentId==='instructor'],['.free-link',freeRouteIds.includes(currentId)],['.sidebar-quick .resource-link',currentId==='resources'],['.practice-link',currentId.startsWith('practice-')],['.slides-link',currentId==='slides']]){const link=document.querySelector(selector);link.classList.toggle('active',active);link.setAttribute('aria-current',active?'page':'false')}
-  const all=[data.orientation,...data.steps],done=all.filter(s=>saved.done.includes(levelKey(s.id))).length;
-  document.querySelector('#progress-text').textContent=`${done} / ${all.length} 완료`;
-  document.querySelector('#progress').max=all.length;document.querySelector('#progress').value=done;
-  const titles={orientation:['수업 준비','로그인과 자료 확인'],gemini:['Gemini','답장·회의록·예산'],notebooklm:['NotebookLM','안내문 요약·원문 비교'],claude:['Claude','보고서 작성·수정'],wrap:['수업 마무리','다음에 해 볼 업무 정하기']};
-  document.querySelector('#course-nav').innerHTML=data.modules.map((m,i)=>{
-    const items=m.id==='orientation'?[data.orientation]:m.stepIds.map(id=>stepData(id));
-    const active=items.some(s=>s.id===currentId);
-    return `<details class="nav-group ${active?'is-current':''}" ${active?'open':''}><summary class="nav-module"><span class="module-number">${String(i).padStart(2,'0')}</span><span class="module-title"><strong>${esc(titles[m.id][0])}</strong><small>${esc(titles[m.id][1])}</small></span>${icon('chevron-down')}</summary><div class="nav-items">${items.map(s=>`<a class="nav-step ${s.id===currentId?'active':''} ${saved.done.includes(levelKey(s.id))?'is-done':''}" ${s.id===currentId?'aria-current="step"':''} href="#${s.id}"><span class="tick">${saved.done.includes(levelKey(s.id))?icon('check'):String(all.findIndex(x=>x.id===s.id)).padStart(2,'0')}</span><span class="step-label">${esc(s.title)}</span></a>`).join('')}${(m.breaks||[]).map(b=>`<div class="break">${icon('clock-3')}${esc(b.timeRange)} · ${esc(b.title)}</div>`).join('')}</div></details>`
-  }).join('');
-}
-function checks(items){return `<section class="section"><h2>완료 전에 확인하세요</h2><div class="checklist"><ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></section>`}
-function promptCard(title,prompt,key){return `<div class="prompt-card"><div class="prompt-head"><strong>${esc(title)}</strong><button class="copy" data-copy="${esc(key)}">전체 복사</button></div><pre>${esc(prompt)}</pre><div class="prompt-footer"><span>화면 아래로 이어지는 내용까지 모두 복사됩니다.</span><button class="text-button" data-expand>전체 펼치기</button></div></div>`}
-function images(s){const actual=s.screenshots||(isExtended()?extended.screenshots?.[s.screenshotKey]:null);const reference=isExtended()&&!actual;const items=actual||data.screenshots?.[s.screenshotKey]||[];if(!items.length)return '';const body=`<section class="section"><h2>실습 예시 화면</h2><p class="note">동봉된 가상 자료로 직접 실행한 화면입니다. 답변 문구와 버튼 위치는 계정·업데이트에 따라 달라질 수 있습니다. 이미지를 누르면 확대됩니다.</p><div class="shots">${items.map(x=>`<figure class="shot"><button class="zoom" data-src="${esc(x.src)}" data-caption="${esc(x.caption)}" aria-label="${esc(x.caption)} 확대"><img src="${esc(x.src)}" alt="${esc(x.caption)}" loading="lazy"></button><figcaption><strong>${esc(x.caption)}</strong><br>${esc(x.capturedAt||'2026-09-27')} 직접 실행 · ${x.type==='error'?'잘못된 답변 예시':'실습 예시'}${x.note?' · '+esc(x.note):''}</figcaption></figure>`).join('')}</div></section>`;return reference?`<details class="reference-shots"><summary>기본연습 자료로 실행한 화면 참고</summary><p class="note">아래 캡처는 짧은 기본연습 자료로 실행한 결과입니다. 새 업무실습 자료의 결과와 수치·기한이 다릅니다. 버튼 위치를 참고할 때만 펼쳐 보세요.</p>${body}</details>`:body}
-function bottom(s){const all=[data.orientation,...data.steps],i=all.findIndex(x=>x.id===s.id),next=all[i+1]?stepData(all[i+1].id):null;return `<div class="bottom-actions"><button class="complete ${saved.done.includes(levelKey(s.id))?'is-done':''}" data-complete="${s.id}">${saved.done.includes(levelKey(s.id))?'✓ 완료 표시됨':'이 단계 완료 표시'}</button>${next?`<a class="primary" href="#${next.id}">다음 · ${esc(next.title)} →</a>`:'<a class="primary" href="#resources">전체 자료와 기록 확인 →</a>'}</div>`}
-function notes(s){return `<section class="section"><h2>나의 검토 기록</h2><label class="note" for="result-note">원문과 다르게 나온 내용, 직접 확인한 숫자, 다음에 바꿀 질문을 적으세요. 이 브라우저에만 저장됩니다.</label><textarea class="result-box" id="result-note" placeholder="예: AI는 예외 승인이 불가능하다고 썼지만, 원문에는 승인 여부가 없어서 답장을 고쳤다.">${esc(saved.notes[levelKey(s.id)]||'')}</textarea><div class="result-actions"><span class="note">개인정보와 실제 내부 자료는 기록하지 마세요.</span><button class="secondary" id="export-notes">전체 기록 받기 ↓</button></div></section>`}
-function head(s,tag){return `<header class="lesson-head"><p class="eyebrow">${esc(tag)}</p><h1>${esc(s.title)}</h1><p class="lead">${esc(s.objective)}</p><div class="meta"><span class="pill">${icon('clock-3')}수업 ${esc(s.timeRange)}</span><span class="pill">${s.endMinute-s.startMinute}분 활동</span><span class="pill">${levelName()} 자료</span>${s.optional?'<span class="pill optional">선택 실습</span>':''}</div></header>`}
+/* 교수 AI 활용 실습 v2.0 — single-file hash router */
 
-const freeRouteIds=['free-guide','free-gemini','free-notebooklm','free-claude'];
-function freeLinks(t){return t.sources.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.title)} ↗</a>`).join(' · ')}
-function freeHint(toolId){const t=freePlans.tools.find(x=>x.id===toolId);return t?`<details class="free-hint"><summary>${icon('shield-check')}<strong>무료 계정 사용 시 확인할 점</strong><small>사용량 확인</small>${icon('chevron-down')}</summary><div class="free-hint-body"><p>${esc(t.requestPlan)}</p><a href="#free-${t.id}">사용량 확인 · 한도에 걸렸을 때 ${icon('arrow-right')}</a></div></details>`:''}
-function freeGuide(){const t=freePlans.tools.find(x=>'free-'+x.id===currentId);return `<header class="lesson-head"><p class="eyebrow">무료 계정 안내</p><h1>${t?esc(t.name)+' 무료 사용 안내':'무료 계정 사용 방법'}</h1><p class="lead">${t?'남은 사용량을 확인하고 아래 순서대로 진행하세요.':'사용량 확인 위치와 한도에 걸렸을 때의 진행 방법을 안내합니다.'}</p><div class="meta"><span class="pill">공식 안내 확인 ${esc(freePlans.checkedAt)}</span><span class="pill">유료 결제·체험 등록 불필요</span></div></header><p>${esc(freePlans.scope)}</p><nav class="free-tabs" aria-label="무료 사용 안내 도구 선택"><a href="#free-guide" ${!t?'aria-current="page"':''}>수업 전 준비</a>${freePlans.tools.map(x=>`<a href="#free-${x.id}" ${x.id===t?.id?'aria-current="page"':''}>${esc(x.name.split(' · ')[0])}</a>`).join('')}</nav>${t?freeTool(t):freeOverview()}<p class="footer-note">${t?'':esc(freePlans.planningNote)} 직접 실행했는지, 짝과 했는지, 예시 화면을 보고 확인했는지 기록하세요.</p><div class="bottom-actions"><a class="primary" href="#${t?t.startRoute:'orientation'}">${t?'이 도구 실습 시작':'시작 준비로 돌아가기'} →</a><a href="${fileUrl('10_무료계정_한도와_실습사용법.md')}" download>무료 계정 안내 받기 ↓</a></div>`}
-function freeOverview(){return `<div class="callout"><strong>무료여도 사용량 한도가 있습니다.</strong><p>${esc(freePlans.intro)}</p></div><section class="section grid-three free-cards">${freePlans.tools.map(t=>`<article class="tool-card"><h2>${esc(t.name)}</h2><p class="quota-reset">${esc(t.reset)}</p><p>${esc(t.quota)}</p><a class="secondary" href="#free-${t.id}">한도와 사용법 →</a></article>`).join('')}</section><section class="section"><h2>수업 전 확인할 것</h2><ol class="actions">${freePlans.preflight.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section><section class="section"><h2>남은 사용량이 적을 때</h2><p>본 수업은 Gemini 3~4회, NotebookLM 3회, Claude 4회로 진행합니다. 추가 실습의 질문은 별도입니다. 수업에서 보낼 횟수이며, 무료로 보장되는 횟수는 아닙니다. 나머지 확인과 수정은 원문을 보면서 직접 합니다.</p><p>한도에 걸리면 이미 받은 답변이나 실습 예시 화면을 원문과 비교하세요. 각 도구의 안내에 질문을 더 보내지 않고 진행하는 방법을 적었습니다.</p><p>이 수업에서는 글을 입력하고, 문서를 요약하고, 답변을 원문과 비교합니다. 보고서도 직접 수정합니다. 오디오 생성은 시간이 남으면 해 보세요. 유료 모델이나 Deep Research는 필요하지 않습니다.</p></section><p class="note">NotebookLM 공식 문서에는 이전 횟수 표와 새 정책이 함께 남아 있습니다. NotebookLM 탭에서 두 안내를 확인할 수 있습니다. 실습 캡처에 나온 사용량은 본인 계정의 남은 사용량과 다를 수 있습니다.</p>`}
-function freeTool(t){return `<section class="section"><h2>얼마나 사용할 수 있나요?</h2><div class="callout"><strong>${esc(t.reset)}</strong><p>${esc(t.quota)}</p></div><ul>${t.publishedLimits.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${t.policyNote?`<p class="policy-note">${esc(t.policyNote)}</p>`:''}<p class="source-links">${freeLinks(t)}</p></section><section class="section"><h2>남은 사용량 확인하기</h2><p>${esc(t.where)}</p><a class="secondary" href="${esc(t.toolUrl)}" target="_blank" rel="noopener noreferrer">${esc(t.name)} 열기 ↗</a></section><section class="section"><h2>실습 순서</h2><ol class="actions">${t.sequence.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section><section class="section"><h2>질문을 줄여서 진행하기</h2><p><strong>${esc(t.requestPlan)}</strong></p><ol class="actions">${t.economy.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="note">${esc(freePlans.planningNote)}</p></section><section class="section"><h2>한도에 걸렸을 때</h2><div class="callout"><p>${esc(t.blocked)}</p></div></section><details class="reference-shots"><summary>공식 도움말 화면 보기</summary><p class="note">${esc(freePlans.checkedAt)} 공식 도움말에서 캡처한 화면입니다. 계정 정보가 나오는 부분은 잘랐습니다.</p><div class="shots">${t.screenshots.map(x=>`<figure class="shot"><button class="zoom" data-src="${esc(x.src)}" data-caption="${esc(x.caption)}" aria-label="${esc(x.caption)} 확대"><img src="${esc(x.src)}" alt="${esc(x.caption)}" loading="lazy"></button><figcaption>${esc(x.caption)} · <a href="${esc(x.sourceUrl)}" target="_blank" rel="noopener noreferrer">공식 원문 ↗</a></figcaption></figure>`).join('')}</div></details>`}
+let course, practice, instructor, freePlans, deck, promptBook = {}, currentId = 'orientation', toastTimer;
+let slideIndex = 0;
+let showNotes = /[?&]instructor/.test(location.search);
+const storeKey = 'gn-prof-ai-v2';
+let saved = { done: [], slide: 0 };
+try { saved = { ...saved, ...JSON.parse(localStorage.getItem(storeKey) || '{}') }; } catch { /* storage unavailable */ }
+const persist = () => { try { localStorage.setItem(storeKey, JSON.stringify(saved)); } catch { /* ignore */ } };
 
-function instructorPage(){const p=instructor;return `<header class="profile-hero"><div><p class="eyebrow">강사</p><h1>강사 소개</h1><h2>${esc(p.name)} <span>${esc(p.englishName)}</span></h2><p class="profile-role">${esc(p.role)}</p><p class="lead">${esc(p.headline)}</p><p>${esc(p.summary)}</p><div class="profile-tags">${p.focus.map(x=>`<span class="pill">${esc(x)}</span>`).join('')}</div><a class="secondary" href="${esc(p.website)}" target="_blank" rel="noopener noreferrer">강사 웹사이트 ↗</a></div><img class="profile-photo" src="${esc(p.photo)}" alt="김세영 강사 프로필 사진"></header><section class="section"><h2>주요 경력</h2><div class="career-list">${p.experience.map(x=>`<article><span>${esc(x.period)}</span><div><h3>${esc(x.organization)}</h3><strong>${esc(x.position)}</strong><p>${esc(x.detail)}</p></div></article>`).join('')}</div></section><section class="section"><h2>개발 프로젝트</h2><div class="grid-three">${p.projects.map(x=>`<article class="tool-card"><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></article>`).join('')}</div></section><section class="section"><h2>학력·연구 분야</h2><div class="teaching-list">${p.education.map(x=>`<article><h3>${esc(x.name)}</h3><p>${esc(x.detail)}</p></article>`).join('')}</div><p class="note">주요 자격 · ${p.qualifications.map(esc).join(' · ')}</p></section><section class="section"><h2>수업 진행 방법</h2><div class="grid-three">${p.coursePrinciples.map(x=>`<article class="tool-card"><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></article>`).join('')}</div></section><p class="note">${esc(p.sourceNote)}</p><div class="bottom-actions"><a class="primary" href="#orientation">실습 준비로 이동 →</a><a href="#resources">실습자료 살펴보기</a></div>`}
-function home(){
-  const s=data.orientation;
-  const modules=[{id:'gemini',number:'01',label:'답장·회의록·예산',title:'쌓인 문의를 처리하고 다음 담당자에게 넘기기',description:'문의 30건과 회신 60개를 처리표·답장·확인 요청으로 정리합니다. 회의에서 바뀐 결정도 업무표에 반영합니다. 구매 요청 24행을 승인 기록과 맞춰 봅니다.',time:'20–70분',start:'g-email'},{id:'notebooklm',number:'02',label:'안내문 요약·원문 비교',title:'문서 네 개로 참가 안내와 문의 답변 만들기',description:'공지·인계서·변경 승인·문의 목록을 함께 읽고, 최신 안내와 문의 14건의 처리표를 만듭니다.',time:'70–120분',start:'n-create'},{id:'claude',number:'03',label:'보고서 작성·수정',title:'같은 자료로 보고서와 전달 메일 완성하기',description:'출석 30행과 설문 25행, 지출·현장 기록을 모아 보고서와 부서장 전달 메일을 작성합니다.',time:'120–165분',start:'c-outline'}];
-  return `<header class="course-hero"><div class="hero-copy"><p class="eyebrow">교직원 연수 · 3시간</p><h1>교직원 AI<br><em>업무 실습</em></h1><p class="lead">Gemini, NotebookLM, Claude로<br>쌓인 문의와 흩어진 업무 자료를 정리합니다.</p><div class="hero-actions"><button class="primary" data-jump-target="start-preparation">수업 준비하기 ${icon('arrow-right')}</button><a class="secondary" href="#resources">실습자료 보기</a></div><a class="hero-instructor" href="#instructor"><img src="${esc(instructor.photo)}" alt=""><span><strong>${esc(instructor.name)}</strong> 강사 소개</span>${icon('arrow-up-right')}</a></div><aside class="hero-agenda"><p class="eyebrow">수업 순서</p><h2>오늘 사용할 도구</h2>${modules.map(m=>`<a class="agenda-item" href="#${m.start}"><span class="agenda-num">${m.number}</span><span class="agenda-text"><strong>${esc(data.tools.find(t=>t.id===m.id).name)}</strong><small>${m.label}</small></span>${icon('arrow-up-right')}</a>`).join('')}<p class="agenda-note">${icon('shield-check')}개인 무료 계정 사용</p></aside></header>
-  <div class="course-stats"><div class="stat"><strong>180<span>분</span></strong><span>설명·실습 170분 + 휴식 10분</span></div><div class="stat"><strong>3<span>가지 도구</span></strong><span>Gemini · NotebookLM · Claude</span></div><div class="stat"><strong>5<span>개의 결과물</span></strong><span>답장 · 회의 표 · 예산 · 요약 · 보고서</span></div></div>
-  <section class="section"><div class="section-heading"><div><p class="eyebrow">실습 내용</p><h2>도구별로 해 볼 일</h2></div><a class="text-link" href="#resources">전체 시간표 ${icon('arrow-up-right')}</a></div><div class="course-overview">${modules.map(m=>`<a class="module-card" data-tool="${m.id}" href="#${m.start}"><div class="module-card-top"><span class="module-badge">${m.number} / ${esc(data.tools.find(t=>t.id===m.id).name)}</span><span class="module-time">${m.time}</span></div><h3>${m.title}</h3><p>${m.description}</p><span class="module-link">실습 살펴보기 ${icon('arrow-right')}</span></a>`).join('')}</div></section>
-  ${teachingDownloads()}<section class="section" id="start-preparation"><div class="section-heading"><div><p class="eyebrow">시작 전 확인</p><h2>수업 전 준비</h2></div><span class="note">시작 준비 · 0–20분</span></div><div class="start-checks"><a class="start-card" href="#free-guide">${icon('shield-check')}<span><strong>로그인·남은 사용량 확인</strong><small>한도에 걸렸을 때 진행할 방법도 확인하세요.</small></span>${icon('arrow-up-right')}</a><a class="start-card" href="#resources">${icon('file-text')}<span><strong>${levelName()} 실습자료 선택됨</strong><small>수업은 업무실습으로 진행합니다. 조작이 어렵다면 기본연습을 고르세요.</small></span>${icon('arrow-up-right')}</a></div><details class="material-selection"><summary>기본연습과 업무실습, 무엇이 다른가요?</summary><p>업무실습은 여러 문의와 원자료를 한꺼번에 처리해, 실제로 쓸 수 있는 처리표·답장·보고서를 만드는 과정입니다. 기본연습은 한 건의 짧은 자료로 조작을 익힙니다. 자료의 건수와 정답이 다르므로 한 활동에서는 한 버전만 선택하세요.</p></details><ol class="actions">${data.preparation.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${downloads(s.sourceFiles)}</section>
-  <section class="section"><h2>시작 안내 · 0–20분</h2><ol class="actions">${s.blocks.map(b=>`<li><span><strong>${b.startMinute}–${b.endMinute}분 · ${esc(b.title)}</strong><br>${esc(b.action)}</span></li>`).join('')}</ol></section>
-  <div class="callout"><strong>답변을 받은 뒤에는 원문과 비교하세요.</strong><p>${esc(data.description)} 실제 메일을 보내거나 보고서를 제출하지는 않습니다.</p></div><details><summary>로그인이 안 되거나 이용 한도에 도달했나요?</summary><p>옆 사람과 함께 진행하세요. 한 사람은 질문을 보내고 다른 사람은 답변을 원문과 비교합니다. 실습 예시 화면에서 틀린 날짜나 문장을 찾아 적어도 됩니다. 확인한 내용은 각자 기록하세요.</p><a href="#free-guide">도구별 사용 안내 보기</a></details><p class="note">NotebookLM은 현재 Gemini Notebook으로 표시될 수 있습니다. 계정과 화면 언어에 따라 명칭이 다릅니다.</p>${checks(s.verificationChecklist)}${notes(s)}${bottom(s)}`;
-}
-function workBrief(s){const b=s.workBrief;if(!b)return '';return `<section class="section work-brief"><h2>이번에 처리할 업무</h2><dl>${[['받은 자료',b.received],['만들어서 넘길 것',b.deliverable]].map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`}
-function step(s){return lessonView(s)}
-function resources(){return resourceView()}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fileUrl = p => p.split('/').map(encodeURIComponent).join('/');
+const dl = p => (p.startsWith('downloads/') || p.startsWith('assets/')) ? p : 'downloads/' + p;
+const baseName = p => p.split('/').pop();
+const fixName = s => String(s ?? '').replace(/(?<!구 )NotebookLM/g, 'Gemini Notebook');
+const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+const external = (url, text) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)} ↗</a>`;
 
-function setMenu(open,restoreFocus=false){
-  document.body.classList.toggle('nav-open',open);
-  document.querySelector('#menu-toggle').setAttribute('aria-expanded',String(open));
-  document.querySelector('#nav-backdrop').hidden=!open;
-  document.querySelector('#lesson').inert=open&&window.matchMedia('(max-width:780px)').matches;
-  if(restoreFocus)document.querySelector('#menu-toggle').focus();
-}
-function decoratePage(id){
-  const main=document.querySelector('#lesson');
-  main.className=id==='orientation'?'page-home':id==='instructor'?'page-instructor':freeRouteIds.includes(id)?'page-free':id==='resources'?'page-resources':'page-lesson';
-  const sectionLabel=id==='slides'?'강의 슬라이드':id.startsWith('practice-')?'추가 실습':id==='orientation'?'수업 준비':id==='instructor'?'강사 소개':freeRouteIds.includes(id)?'무료 계정 안내':id==='resources'?'자료실':data.tools.find(t=>t.id===stepData(id)?.toolId)?.name||'실습 마무리';
-  main.insertAdjacentHTML('afterbegin',`<div class="workspace-top"><span class="workspace-path">수업 <span>/</span> <strong>${esc(sectionLabel)}</strong></span><span class="workspace-time">${icon('clock-3')}180분 실습 과정</span></div>`);
-  if(!main.querySelector('.lesson-stages')&&id!=='orientation'&&id!=='instructor'&&id!=='practice-bank'&&!freeRouteIds.includes(id)){
-    const sections=Array.from(main.querySelectorAll(':scope > section.section')).filter(section=>section.querySelector('h2'));
-    const labels={'이번에 처리할 업무':'업무와 결과물','이 순서로 해보세요':'실습 순서','사용할 실습자료':'실습자료','질문 복사해서 보내기':'질문 복사','실습 예시 화면':'실제 화면','완료 전에 확인하세요':'완료 기준','나의 검토 기록':'검토 기록'};
-    sections.forEach((section,i)=>section.id='section-'+i);
-    const header=main.querySelector('.lesson-head');
-    if(header&&sections.length>1)header.insertAdjacentHTML('afterend',`<nav class="page-links" aria-label="이 페이지에서 바로가기">${sections.map(section=>`<button class="page-jump" data-jump-target="${section.id}">${esc(labels[section.querySelector('h2').textContent]||section.querySelector('h2').textContent)}</button>`).join('')}</nav>`);
+/* ---------- route model ---------- */
+const ORDER = ['orientation', 'instructor', 'why-ai', 'demo-email', 'tool-comparison', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'student-ai-use', 'tomorrow', 'free-guide', 'resources'];
+const COURSE_NAV = ['why-ai', 'demo-email', 'tool-comparison', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'student-ai-use', 'tomorrow'];
+const LABELS = {
+  'orientation': '수업 안내', 'instructor': '강사 소개', 'why-ai': '왜 AI인가', 'demo-email': '데모: 학생 메일 40통',
+  'notebooklm-papers': '논문 5편 비교', 'claude-evaluations': '강의평가 180개', 'gemini-syllabus': '강의계획서·학칙 답장',
+  'student-ai-use': '학생의 AI 사용', 'tool-comparison': '도구 지도', 'tomorrow': '내일 해 볼 업무',
+  'slides': '강의 슬라이드', 'free-guide': '무료 계정 안내', 'resources': '자료실'
+};
+const TIMES = { 'why-ai': '0–15분', 'demo-email': '15–20분', 'tool-comparison': '20–25분', 'notebooklm-papers': '25–70분', 'claude-evaluations': '70–105분', 'gemini-syllabus': '115–150분', 'student-ai-use': '150–170분', 'tomorrow': '170–180분' };
+const span = id => { const m = (TIMES[id] || '').match(/(\d+)–(\d+)/); return m ? (m[2] - m[1]) + '분' : ''; };
+const ROUTES = new Set([...ORDER, 'slides', 'free-guide']);
+const PROMPT_SECTIONS = { 1: 'demo-email', 2: 'notebooklm-papers', 3: 'claude-evaluations', 4: 'gemini-syllabus', 5: 'student-ai-use', 6: 'tomorrow' };
+const toolOf = id => course.sectionTools[id] || (id === 'tool-comparison' ? 'search' : '');
+const toolName = key => course.tools[key]?.name || '';
+
+function toast(text) { const el = document.querySelector('#toast'); el.textContent = text; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600); }
+
+/* ---------- 06_복사용_질문모음.md parser ---------- */
+function parsePromptBook(md) {
+  const out = {};
+  const parts = md.replace(/\r\n/g, '\n').split(/^## /m).slice(1);
+  for (const part of parts) {
+    const m = part.match(/^(\d+)\.\s*(.+)\n/);
+    if (!m) continue;
+    const route = PROMPT_SECTIONS[m[1]];
+    if (!route) continue;
+    const body = part.slice(m[0].length).replace(/\n---\s*$/, '');
+    const subs = body.split(/^### /m);
+    const intro = subs[0].split('```')[0].trim();
+    const items = [];
+    const readItem = (title, text) => {
+      const code = text.match(/```(?:text)?\n([\s\S]*?)```/);
+      if (!code) return;
+      const before = text.slice(0, code.index).trim();
+      const after = text.slice(code.index + code[0].length);
+      const check = (after.match(/확인할 곳:\s*(.+)/) || [])[1] || '';
+      items.push({ title: fixName(title.trim()), note: before, prompt: code[1].trim(), check: check.trim() });
+    };
+    if (subs.length > 1) subs.slice(1).forEach(s => { const nl = s.indexOf('\n'); readItem(s.slice(0, nl), s.slice(nl + 1)); });
+    else readItem(m[2], subs[0]);
+    out[route] = { title: fixName(m[2].trim()), intro: subs.length > 1 ? intro : '', items };
   }
-  main.querySelectorAll('[data-jump-target]').forEach(button=>button.addEventListener('click',()=>{
-    const target=document.getElementById(button.dataset.jumpTarget);target?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-    const heading=target?.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true})}
+  return out;
+}
+
+/* ---------- shared pieces ---------- */
+function fileLinks(files) {
+  return `<div class="files">${(files || []).map(f => `<a class="file" href="${fileUrl(dl(f.path || f))}" download>${esc(f.name || baseName(f))}</a>`).join('')}</div>`;
+}
+let promptStore = [];
+function promptCard(item) {
+  const i = promptStore.push(item.prompt) - 1;
+  return `<article class="prompt">
+    <div class="prompt-head"><h3>${esc(item.title)}</h3><button class="copy-btn" data-copy="${i}">질문 복사</button></div>
+    ${item.note ? `<p class="prompt-note">${inline(item.note)}</p>` : ''}
+    <pre>${esc(item.prompt)}</pre>
+    ${item.check ? `<p class="prompt-check"><strong>확인할 곳</strong>${inline(item.check)}</p>` : ''}
+  </article>`;
+}
+function pager(id) {
+  const i = ORDER.indexOf(id);
+  const prev = i > 0 ? ORDER[i - 1] : null, next = i >= 0 && i < ORDER.length - 1 ? ORDER[i + 1] : (i < 0 ? 'orientation' : null);
+  const a = (r, cls, label) => r ? `<a class="${cls}" href="#${r}"><small>${label}</small><span>${cls === 'next' ? esc(LABELS[r]) + ' →' : '← ' + esc(LABELS[r])}</span></a>` : `<span class="empty"></span>`;
+  return `<nav class="pager" aria-label="이전·다음">${a(prev, 'prev', '이전')}${a(next, 'next', i < 0 ? '처음으로' : '다음')}</nav>`;
+}
+function doneButton(id) {
+  const on = saved.done.includes(id);
+  return `<div class="done-row"><button class="done-btn" data-done="${id}" aria-pressed="${on}">${on ? '✓ 완료 표시됨' : '이 단계 완료 표시'}</button></div>`;
+}
+function stuckCallout() {
+  return `<div class="callout tip"><h3>막히면</h3><p>사용량 한도에 걸리면 받은 답을 저장하고 옆 사람 화면으로 함께 확인하세요. 도구별 대처는 <a href="#free-guide">무료 계정 안내</a>에 있습니다.</p></div>`;
+}
+function privacyCallout() {
+  return `<div class="callout warn"><h3>주의 · 개인정보</h3><p>실습 파일은 모두 교육용 가상 자료입니다. 실제 학생 이름, 학번, 성적, 메일은 AI에 넣지 않습니다.</p></div>`;
+}
+
+/* ---------- pages ---------- */
+function homePage() {
+  const h = course.hero, total = 180;
+  return `<div class="page">
+  <section class="hero">
+    <div>
+      <p class="hero-kicker">${esc(h.kicker)}</p>
+      <h1>${esc(h.title[0])}<br><em>${esc(h.title[1].split(' 합니다')[0])}</em>${h.title[1].includes(' 합니다') ? ' 합니다' : ''}</h1>
+      <p class="hero-lead">${esc(h.lead)}</p>
+      <div class="hero-actions"><a class="btn btn-primary" href="#why-ai">실습 시작하기 →</a><a class="hero-link" href="#slides">강의 슬라이드 보기</a></div>
+    </div>
+    <div class="outcomes" aria-label="오늘 만들어 볼 것">${h.outcomes.map(o => `<a class="outcome" data-tool="${o.tool}" href="#${o.route}">${esc(o.text)}</a>`).join('')}</div>
+  </section>
+
+  <section class="block">
+    <div class="block-head"><h2>오늘의 흐름</h2><span class="meta">총 180분</span></div>
+    <div class="timebar" aria-hidden="true">${course.timeline.map(t => `<span data-tool="${t.tool}" style="flex:${t.end - t.start}"></span>`).join('')}</div>
+    <ol class="timeline">${course.timeline.map(t => {
+      const inner = `<span class="tl-time">${t.start}–${t.end}분</span>
+      <span><span class="tl-title">${esc(t.title)}</span><span class="tl-kind">${esc(t.kind)}${t.route ? ' · ' + (t.end - t.start) + '분' : ''}</span></span>
+      ${course.tools[t.tool] ? `<span class="chip" data-tool="${t.tool}">${esc(course.tools[t.tool].short || toolName(t.tool))}</span>` : t.tool === 'search' ? '<span class="chip" data-tool="search">도구 지도</span>' : '<span></span>'}`;
+      return `<li data-tool="${t.tool}">${t.route ? `<a href="#${t.route}">${inner}</a>` : `<div class="tl-row">${inner}</div>`}</li>`;
+    }).join('')}</ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head"><h2>시작 전 준비</h2><span class="meta">수업 전 5분</span></div>
+    <div class="cards">${course.prep.map((p, i) => `<article class="card"><span class="num">${i + 1}</span><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p>${p.href ? `<a href="${fileUrl(p.href)}" download>${esc(p.link)} ↓</a>` : `<a href="#${p.route}">${esc(p.link)} →</a>`}</article>`).join('')}</div>
+  </section>
+
+  <section class="block">
+    <a class="instructor-mini" href="#instructor"><img src="${esc(instructor.photo)}" alt=""><span><strong>강사 ${esc(instructor.name)}</strong><span>${esc(instructor.role)}</span></span></a>
+  </section>
+  </div>`;
+}
+
+function whyAiPage() {
+  const w = course.whyAi, r = w.result, max = Math.max(...r.types.map(x => x[1]));
+  const minutes = r.rehearsal.minutes ?? '___';
+  return `<div class="page">
+  <header class="lesson-head" data-tool=""><div class="lesson-meta"><span class="chip" data-tool="mixed">설명</span><span class="time">${TIMES['why-ai']}</span></div>
+    <h1>${esc(w.title)}</h1><p class="lead">${esc(w.lead)}</p></header>
+
+  <section class="section"><h2>${esc(r.title)}</h2><p>${esc(r.lead)}</p>
+    <div class="funnel">${r.funnel.map(f => `<div><strong>${f.n}</strong><span>${esc(f.label)}</span>${f.note ? `<small>${esc(f.note)}</small>` : ''}</div>`).join('<span class="funnel-arrow" aria-hidden="true">→</span>')}</div>
+    <div class="result-grid">
+      <div class="type-bars" aria-label="유형별 메일 수">${r.types.map(([name, n]) => `<div class="type-row"><span>${esc(name)}</span><span class="bar"><i style="width:${n / max * 100}%"></i></span><strong>${n}</strong></div>`).join('')}<p class="checked">${esc(r.source)}</p></div>
+      <div class="rehearsal"><span class="rehearsal-label">${esc(r.rehearsal.label)}</span><strong>${esc(minutes)}<small>분</small></strong><span>${esc(r.rehearsal.task)}</span><p>오늘 이 방에서 다시 잽니다.</p></div>
+    </div>
+    <div class="callout practice"><p>${esc(r.judgement)}</p></div></section>
+
+  <section class="section"><h2>나눠서 맡깁니다</h2><div class="split">
+    <div class="ai-side"><h3>${esc(w.split.ai.title)}</h3><ul>${w.split.ai.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="human-side"><h3>${esc(w.split.human.title)}</h3><ul>${w.split.human.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+  </div></section>
+
+  ${w.cases?.length ? `<section class="section" id="real-cases"><h2>${esc(w.casesTitle)}</h2><div class="cards">${w.cases.map(c => `<article class="card"><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p>${c.source ? `<span class="sources">출처 ${external(c.source.url, c.source.title)}</span>` : ''}</article>`).join('')}</div></section>` : '<!-- 실제 사례(출처 포함): lesson-data.json whyAi.cases 에 추가하면 여기에 표시됩니다 -->'}
+
+  <section class="section"><h2>${esc(w.poll.question)}</h2><ul class="poll">${w.poll.items.map(x => `<li><strong>${esc(x.title || x)}</strong>${x.text ? `<span>${esc(x.text)}</span>` : ''}</li>`).join('')}</ul></section>
+
+  <section class="section"><h2>질문은 네 줄로 씁니다</h2><p>오늘 모든 실습 질문이 이 순서를 따릅니다.</p>
+    <div class="formula">${w.formula.map(f => `<div><strong>${esc(f.label)}</strong><span>${esc(f.meaning)}</span><q>${esc(f.example)}</q></div>`).join('')}</div></section>
+
+  <section class="section"><h2>자료를 넣기 전에</h2><div class="callout warn"><h3>주의 · 개인정보</h3><p>${esc(w.privacy)}</p><p><a href="#tool-comparison">도구별 학습 설정 보기 →</a></p></div>
+    <div class="callout tip"><p>${esc(w.measure.replace('{minutes}', minutes))}</p></div></section>
+  ${doneButton('why-ai')}${pager('why-ai')}</div>`;
+}
+
+function practicePage(id) {
+  const s = practice.sections.find(x => x.id === id);
+  const tool = toolOf(id);
+  const book = promptBook[id];
+  const prompts = book?.items?.length ? book.items : [{ title: '복사할 질문', prompt: s.prompt, check: '' }, ...(s.followups || [])];
+  const t = course.tools[tool];
+  const toolLabel = tool === 'notebook' ? t.name : fixName(s.tool);
+  const openLinks = tool === 'mixed' ? [course.tools.claude, course.tools.gemini] : [t];
+  const range = TIMES[id] || s.minutes + '분';
+  const mins = span(id);
+  return `<div class="page" data-tool="${tool}">
+  <header class="lesson-head"><div class="lesson-meta"><span class="chip solid" data-tool="${tool}">${esc(toolLabel)}</span><span class="time">${esc(range)}${mins ? ' · ' + mins : ''}</span></div>
+    <h1>${esc(fixName(s.title))}</h1><p class="lead">${esc(s.goal)}</p></header>
+
+  <section class="task-box"><h2>이번에 할 일</h2><dl>
+    <dt>시간</dt><dd>${esc(range)}${mins ? ` (${mins})` : ''}</dd>
+    <dt>도구</dt><dd>${esc(toolLabel)} · ${openLinks.map(o => external(o.url, (o.short || o.name) + ' 열기')).join(' · ')}</dd>
+    <dt>올릴 파일</dt><dd>${fileLinks(s.files)}</dd>
+  </dl></section>
+
+  <section class="section"><h2>순서</h2><ol class="steps">${s.steps.map(x => `<li>${esc(fixName(x))}</li>`).join('')}</ol></section>
+
+  <section class="section"><h2>복사할 질문</h2>${book?.intro ? `<p>${inline(book.intro)}</p>` : ''}${prompts.map(promptCard).join('')}</section>
+
+  <section class="section"><h2>확인할 한 곳</h2><div class="callout practice"><p class="check-callout">${esc(s.check)}</p></div>
+    ${privacyCallout()}${stuckCallout()}</section>
+  ${doneButton(id)}${pager(id)}</div>`;
+}
+
+function toolComparisonPage() {
+  const c = course.toolComparison, s = practice.sections.find(x => x.id === 'tool-comparison');
+  return `<div class="page">
+  <header class="lesson-head" data-tool="search"><div class="lesson-meta"><span class="chip" data-tool="search">도구 지도</span><span class="time">${TIMES['tool-comparison']}</span></div>
+    <h1>${esc(c.title)}</h1><p class="lead">${esc(c.lead)}</p></header>
+  <section class="section compare"><h2>한눈에 비교</h2>
+    <div class="table-wrap"><table class="compare-table"><thead><tr>${c.table.columns.map(x => `<th scope="col">${esc(x)}</th>`).join('')}</tr></thead><tbody>
+    ${c.table.rows.map(r => `<tr data-tool="${r.accent}"><th scope="row"><span class="dot"></span>${esc(r.tool)}</th><td>${esc(r.basis)}</td><td>${esc(r.good)}</td><td>${esc(r.weak)}</td><td>${esc(r.free)}</td><td>${esc(r.training)}</td></tr>`).join('')}
+    </tbody></table></div>
+    ${s ? `<p class="compare-how"><strong>고르는 순서</strong> ${s.steps.map((x, i) => `${'①②③'[i] || ''} ${esc(x)}`).join(' ')}</p>` : ''}</section>
+  <h2 class="section" style="margin-bottom:0">도구별 자세히</h2>
+  ${c.groups.map(g => `<section class="group"><div class="group-head"><h2>${esc(g.title)}</h2></div><p class="group-basis">${esc(g.basis)}</p>
+    <div class="tool-grid">${g.tools.map(t => `<article class="tool-card" data-tool="${t.accent}"><h3>${esc(t.name)}</h3><dl>
+      <dt>교수님께 좋은 일</dt><dd>${esc(t.bestFor)}</dd>
+      <dt class="caution">주의 · 학습 설정</dt><dd>${esc(t.caution)}</dd></dl>
+      ${t.sources.length ? `<p class="sources">출처 ${t.sources.map(x => external(x.url, x.title)).join('')}</p>` : ''}</article>`).join('')}</div></section>`).join('')}
+  <section class="section"><h2>한 줄로 기억하기</h2><p class="statement">${esc(c.takeaway)}</p></section>
+  <section class="section"><div class="callout tip"><h3>이름이 바뀌거나 사라진 도구</h3><p>${esc(c.notice)}</p><p class="sources">${c.noticeSources.map(x => external(x.url, x.title)).join('')}</p></div>
+    <p class="checked">출처 확인일 ${esc(c.checkedAt)}. 요금과 설정 이름은 바뀔 수 있습니다.</p></section>
+  ${doneButton('tool-comparison')}${pager('tool-comparison')}</div>`;
+}
+
+function tomorrowPage() {
+  const t = course.tomorrow, book = promptBook.tomorrow;
+  const fallback = practice.sections.find(x => x.id === 'tool-comparison');
+  const items = book?.items?.length ? book.items.map(x => ({ ...x, title: '내 업무용 네 줄 질문' })) : [{ title: '내 업무용 네 줄 질문', prompt: fallback?.prompt || '', check: fallback?.check || '' }];
+  return `<div class="page">
+  <header class="lesson-head" data-tool=""><div class="lesson-meta"><span class="chip" data-tool="mixed">정리</span><span class="time">${TIMES.tomorrow}</span></div>
+    <h1>${esc(t.title)}</h1><p class="lead">${esc(t.lead)}</p></header>
+  <section class="section"><h2>이 중 하나를 고르세요</h2><ul class="ideas">${t.ideas.map(x => `<li data-tool="${x.tool}"><span>${esc(x.text)}</span><span class="chip" data-tool="${x.tool}">${esc(course.tools[x.tool].short || toolName(x.tool))}</span></li>`).join('')}</ul>
+    <p style="margin-top:16px">어느 도구가 맞을지 모르겠다면 <a href="#tool-comparison">도구 지도</a>를 보세요.</p></section>
+  <section class="section"><h2>빈칸을 채워 질문하기</h2>${book?.intro || book?.items?.[0]?.note ? `<p>${inline(book.items[0].note || book.intro)}</p>` : ''}${items.map(x => promptCard({ ...x, note: '' })).join('')}</section>
+  <section class="section"><h2>내일 아침 세 가지</h2><ul class="checklist">${t.checklist.map(x => `<li>${esc(x)}</li>`).join('')}</ul></section>
+  ${doneButton('tomorrow')}${pager('tomorrow')}</div>`;
+}
+
+function instructorPage() {
+  const p = instructor;
+  return `<div class="page">
+  <header class="lesson-head" data-tool=""><div class="profile"><div>
+    <div class="lesson-meta"><span class="chip" data-tool="mixed">강사 소개</span></div>
+    <h1>${esc(p.name)} <span style="font-weight:600;font-size:26px;color:var(--ink-2)">${esc(p.englishName)}</span></h1>
+    <p class="role">${esc(p.role)} · ${esc(p.headline)}</p><p>${esc(p.summary)}</p>
+    <div class="tags">${p.focus.map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>
+    ${external(p.website, p.websiteLabel || '강사 웹사이트')}
+  </div><img class="profile-photo" src="${esc(p.photo)}" alt="${esc(p.name)} 강사 사진"></div></header>
+  <section class="section"><h2>오늘 수업은 이렇게 진행합니다</h2><div class="cards">${p.coursePrinciples.map((x, i) => `<article class="card"><span class="num">${i + 1}</span><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></article>`).join('')}</div></section>
+  <section class="section"><h2>주요 경력</h2><ul class="career">${p.experience.map(x => `<li><span class="period">${esc(x.period)}</span><div><h3>${esc(x.organization)} · ${esc(x.position)}</h3><p>${esc(x.detail)}</p></div></li>`).join('')}</ul></section>
+  <section class="section"><h2>개발 프로젝트</h2><ul class="career">${p.projects.map(x => `<li><span class="period">프로젝트</span><div><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></div></li>`).join('')}</ul></section>
+  <section class="section"><h2>학력·자격</h2><ul>${p.education.map(x => `<li><strong>${esc(x.name)}</strong> — ${esc(x.detail)}</li>`).join('')}<li>자격: ${p.qualifications.map(esc).join(', ')}</li></ul></section>
+  ${pager('instructor')}</div>`;
+}
+
+function freeGuidePage() {
+  const f = freePlans;
+  const accent = { gemini: 'gemini', notebooklm: 'notebook', claude: 'claude' };
+  return `<div class="page">
+  <header class="lesson-head" data-tool=""><div class="lesson-meta"><span class="chip" data-tool="mixed">무료 계정 안내</span><span class="checked">공식 안내 확인 ${esc(f.checkedAt)}</span></div>
+    <h1>무료 계정으로 실습하기</h1><p class="lead">${esc(f.intro)}</p></header>
+  <section class="section"><h2>수업 전에 확인할 것</h2><ol class="steps">${f.preflight.map(x => `<li>${esc(x)}</li>`).join('')}</ol><p>${esc(f.scope)}</p></section>
+  ${f.tools.map(t => `<section class="free-tool" data-tool="${accent[t.id]}">
+    <h2>${esc(t.name)}</h2>
+    <div class="callout practice"><h3>이번 수업에서 보낼 질문</h3><p>${esc(t.requestPlan)}</p></div>
+    <h3>얼마나 쓸 수 있나요</h3><p><strong>${esc(t.reset)}</strong><br>${esc(t.quota)}</p>
+    <ul>${t.publishedLimits.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    ${t.policyNote ? `<p>${esc(t.policyNote)}</p>` : ''}
+    <h3>남은 사용량 보는 곳</h3><p>${esc(t.where)}</p>
+    <h3>실습 순서</h3><ol>${t.sequence.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+    <h3>한도에 걸리면</h3><p>${esc(t.blocked)}</p>
+    <p><a class="btn btn-secondary btn-small" href="#${t.startRoute}">이 도구 실습으로 →</a> ${external(t.toolUrl, t.name.split(' (')[0] + ' 열기')}</p>
+    <p class="sources">출처 ${t.sources.map(x => external(x.url, x.title)).join('')}</p>
+    ${(t.screenshots || []).length ? `<details><summary>공식 안내 화면 보기</summary>${t.screenshots.map(x => `<figure class="shot-figure"><img src="${esc(x.src)}" alt="${esc(x.caption)}" loading="lazy"><figcaption>${esc(fixName(x.caption))}</figcaption></figure>`).join('')}</details>` : ''}
+  </section>`).join('')}
+  <p class="section" style="max-width:var(--measure)">${esc(f.planningNote)}</p>
+  ${pager('free-guide')}</div>`;
+}
+
+function slidesPage() {
+  if (!deck || !deck.slides?.length) return `<div class="page"><h1>강의 슬라이드</h1><p class="lead">슬라이드를 준비하고 있습니다. 잠시 뒤 다시 열어 주세요.</p></div>`;
+  slideIndex = Math.min(Math.max(slideIndex, 0), deck.slides.length - 1);
+  const s = deck.slides[slideIndex], n = deck.slides.length, focus = document.body.classList.contains('slide-focus');
+  const route = s.route && ROUTES.has(s.route) && s.route !== 'slides' ? s.route : null;
+  return `<div class="page page-slides">
+  <header class="lesson-head" data-tool="" style="margin-bottom:20px"><h1>강의 슬라이드</h1></header>
+  <div class="slide-toolbar">
+    <button class="btn btn-secondary btn-small" id="slide-prev" ${slideIndex === 0 ? 'disabled' : ''}>← 이전</button>
+    <button class="btn btn-secondary btn-small" id="slide-next" ${slideIndex === n - 1 ? 'disabled' : ''}>다음 →</button>
+    <label class="sr-only" for="slide-select">슬라이드 고르기</label>
+    <select id="slide-select">${deck.slides.map((x, i) => `<option value="${i}" ${i === slideIndex ? 'selected' : ''}>${i + 1}. ${esc(fixName(x.title))}</option>`).join('')}</select>
+    <button class="btn btn-secondary btn-small" id="slide-focus" aria-pressed="${focus}">${focus ? '목차 다시 보기' : '크게 보기'}</button>
+    <span class="slide-counter">${slideIndex + 1} / ${n}</span>
+  </div>
+  <figure class="slide-frame" style="margin:0"><img src="${esc(s.image)}" alt="${slideIndex + 1}장. ${esc(fixName(s.title))}"></figure>
+  <div class="slide-caption"><strong>${esc(fixName(s.title))}</strong>${route ? `<a class="btn btn-primary btn-small" href="#${route}">이 장의 실습 페이지 → ${esc(LABELS[route])}</a>` : ''}</div>
+  <p style="font-size:17px;color:var(--ink-2)">키보드 ← → 로 넘깁니다.${deck.pptx ? ` <a href="${fileUrl(dl(deck.pptx))}" download>PPT 받기 ↓</a>` : ''}${deck.pdf ? ` · <a href="${fileUrl(dl(deck.pdf))}" download>PDF 받기 ↓</a>` : ''}</p>
+  ${s.notes ? `<p><button class="btn btn-secondary btn-small" id="notes-toggle" aria-expanded="${showNotes}">${showNotes ? '강사용 노트 닫기' : '강사용 노트 보기'}</button></p>${showNotes ? `<div class="speaker-notes">${esc(s.notes)}</div>` : ''}` : ''}
+  </div>`;
+}
+
+function resourcesPage() {
+  const used = {};
+  practice.sections.forEach(s => (s.files || []).forEach(f => { if (f.path !== practice.guide.path) (used[f.path] ||= []).push(s.id); }));
+  const profFiles = [practice.guide, ...uniqueFiles(), practice.prompts];
+  return `<div class="page">
+  <header class="lesson-head" data-tool=""><div class="lesson-meta"><span class="chip" data-tool="mixed">자료실</span></div><h1>자료실</h1>
+    <p class="lead">${esc(practice.note)}</p></header>
+  <section class="section"><div class="block-head"><h2>교수 실습 자료</h2><a class="btn btn-primary" href="${fileUrl(course.zip)}" download>전체 받기 (zip) ↓</a></div>
+    <table class="file-table"><thead><tr><th>파일</th><th>쓰는 시간</th></tr></thead><tbody>
+    ${profFiles.map(f => `<tr><td><a href="${fileUrl(f.path)}" download>${esc(f.name)}</a></td><td>${(used[f.path] || []).filter(r => TIMES[r]).map(r => `${esc(LABELS[r])} <small>${TIMES[r]}</small>`).join('') || '<small>전체 안내</small>'}</td></tr>`).join('')}
+    </tbody></table></section>
+  <section class="section"><h2>강의 슬라이드</h2><p><a class="btn btn-secondary btn-small" href="#slides">웹에서 보기 →</a>
+    ${deck?.pptx ? ` <a class="btn btn-secondary btn-small" href="${fileUrl(dl(deck.pptx))}" download>PPT ↓</a>` : ''}${deck?.pdf ? ` <a class="btn btn-secondary btn-small" href="${fileUrl(dl(deck.pdf))}" download>PDF ↓</a>` : ''}</p></section>
+  <section class="section"><details><summary>강사용 자료</summary><div class="muted-box">
+    <p style="margin-top:16px">정답과 확인 기준입니다. 참가자에게 미리 나눠 주지 않고, AI에 소스로 올리지 않습니다.</p>
+    <p><a href="${fileUrl('downloads/교수실습/90_교수실습_해설.md')}" download>90_교수실습_해설.md ↓</a></p></div></details></section>
+  ${pager('resources')}</div>`;
+}
+function uniqueFiles() {
+  const seen = new Set(), out = [];
+  practice.sections.forEach(s => (s.files || []).forEach(f => { if (!seen.has(f.path) && f.path !== practice.guide.path) { seen.add(f.path); out.push(f); } }));
+  return out.sort((x, y) => x.name.localeCompare(y.name));
+}
+
+/* ---------- nav ---------- */
+function renderNav() {
+  const item = (id, time) => {
+    const tool = toolOf(id);
+    const done = saved.done.includes(id);
+    return `<a class="nav-item ${id === currentId ? 'active' : ''} ${done ? 'is-done' : ''}" ${tool ? `data-tool="${tool}"` : ''} href="#${id}" ${id === currentId ? 'aria-current="page"' : ''}>
+      <span class="nav-dot ${tool ? '' : 'plain'}" aria-hidden="true">${done ? '✓' : ''}</span>
+      <span>${esc(LABELS[id])}${time ? `<span class="nav-time">${time}</span>` : ''}</span></a>`;
+  };
+  document.querySelector('#course-nav').innerHTML = `
+    <div class="nav-group"><p class="nav-label">시작</p>${item('orientation')}${item('instructor')}</div>
+    <div class="nav-group"><p class="nav-label">수업 180분</p>${COURSE_NAV.map(id => item(id, TIMES[id])).join('')}</div>
+    <div class="nav-group"><p class="nav-label">참고</p>${item('slides')}${item('free-guide')}${item('resources')}</div>`;
+  document.querySelector('.topbar-link').toggleAttribute('aria-current', currentId === 'slides');
+}
+
+/* ---------- render ---------- */
+function render() {
+  let id = decodeURIComponent(location.hash.slice(1)) || 'orientation';
+  if (id.startsWith('free-')) id = 'free-guide';
+  if (!ROUTES.has(id)) id = 'orientation';
+  const changed = id !== currentId;
+  currentId = id;
+  promptStore = [];
+  const main = document.querySelector('#lesson');
+  main.innerHTML =
+    id === 'orientation' ? homePage() :
+    id === 'why-ai' ? whyAiPage() :
+    id === 'tool-comparison' ? toolComparisonPage() :
+    id === 'tomorrow' ? tomorrowPage() :
+    id === 'instructor' ? instructorPage() :
+    id === 'free-guide' ? freeGuidePage() :
+    id === 'slides' ? slidesPage() :
+    id === 'resources' ? resourcesPage() :
+    practicePage(id);
+  if (id !== 'slides') document.body.classList.remove('slide-focus');
+  document.title = `${LABELS[id]} | ${course.title}`;
+  renderNav();
+  bind();
+  document.body.classList.remove('nav-open');
+  document.querySelector('#menu-toggle').setAttribute('aria-expanded', 'false');
+  if (changed) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+}
+
+async function copyText(text) {
+  try {
+    await Promise.race([navigator.clipboard.writeText(text), new Promise((_, r) => setTimeout(() => r(Error('timeout')), 1500))]);
+    return true;
+  } catch {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch { ok = false; }
+    ta.remove(); return ok;
+  }
+}
+
+function bind() {
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    const ok = await copyText(promptStore[Number(b.dataset.copy)]);
+    if (ok) { b.textContent = '복사됨 ✓'; b.classList.add('done'); setTimeout(() => { b.textContent = '질문 복사'; b.classList.remove('done'); }, 2000); toast('질문을 복사했습니다. 도구 입력란에 붙여 넣으세요.'); }
+    else { const pre = b.closest('.prompt').querySelector('pre'); const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast('자동 복사가 막혔습니다. 선택된 글을 Ctrl+C로 복사하세요.'); }
   }));
-  setMenu(false);
+  document.querySelector('[data-done]')?.addEventListener('click', e => {
+    const id = e.currentTarget.dataset.done;
+    saved.done = saved.done.includes(id) ? saved.done.filter(x => x !== id) : [...saved.done, id];
+    persist(); const y = scrollY; render(); scrollTo({ top: y, behavior: 'instant' });
+  });
+  const go = i => { slideIndex = i; saved.slide = i; persist(); render(); };
+  document.querySelector('#slide-prev')?.addEventListener('click', () => go(slideIndex - 1));
+  document.querySelector('#slide-next')?.addEventListener('click', () => go(slideIndex + 1));
+  document.querySelector('#slide-select')?.addEventListener('change', e => go(Number(e.target.value)));
+  document.querySelector('#notes-toggle')?.addEventListener('click', () => { showNotes = !showNotes; render(); });
+  document.querySelector('#slide-focus')?.addEventListener('click', () => { document.body.classList.toggle('slide-focus'); render(); });
 }
-document.querySelector('#menu-toggle').addEventListener('click',()=>setMenu(!document.body.classList.contains('nav-open')));
-document.querySelector('#nav-backdrop').addEventListener('click',()=>setMenu(false,true));
-document.querySelector('#course-sidebar').addEventListener('click',event=>{if(event.target.closest('a[href^="#"]')&&document.body.classList.contains('nav-open')){setMenu(false);document.querySelector('#lesson').focus({preventScroll:true})}});
-document.addEventListener('keydown',event=>{
-  if(!document.body.classList.contains('nav-open'))return;
-  if(event.key==='Escape'){setMenu(false,true);return}
-  if(event.key==='Tab'){
-    const controls=[document.querySelector('#menu-toggle'),...document.querySelectorAll('#course-sidebar a,#course-sidebar button,#course-sidebar summary')].filter(el=>el.getClientRects().length>0);
-    const first=controls[0],last=controls.at(-1);
-    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus()}
-    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus()}
-  }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.body.classList.contains('nav-open')) { document.body.classList.remove('nav-open'); return; }
+  if (currentId !== 'slides' || !deck?.slides?.length || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape' && document.body.classList.contains('slide-focus')) { document.body.classList.remove('slide-focus'); render(); return; }
+  const d = (e.key === 'ArrowRight' || e.key === 'PageDown') ? 1 : (e.key === 'ArrowLeft' || e.key === 'PageUp') ? -1 : 0;
+  if (!d) return;
+  e.preventDefault();
+  const next = Math.min(Math.max(slideIndex + d, 0), deck.slides.length - 1);
+  if (next !== slideIndex) { slideIndex = next; saved.slide = next; persist(); render(); }
 });
-window.matchMedia('(max-width:780px)').addEventListener('change',event=>{if(!event.matches)setMenu(false)});
+document.querySelector('#menu-toggle').addEventListener('click', () => {
+  const open = document.body.classList.toggle('nav-open');
+  document.querySelector('#menu-toggle').setAttribute('aria-expanded', String(open));
+});
 
-let notesUrl;
-function exportNotes(){
- const base=[data.orientation,...data.steps];
- const variants=[{label:'기본연습 및 공통 기록',entries:base.map(s=>({s,key:s.id}))}];
- for(const [prefix,label] of [['work-v2:','업무실습 기록'],['extended:','이전 확장본 기록 (v1.5)']]){
-  if((prefix==='work-v2:'&&isExtended())||Object.keys(saved.notes).some(k=>k.startsWith(prefix))||saved.done.some(k=>k.startsWith(prefix)))variants.push({label,entries:data.steps.filter(s=>s.id!=='wrap').map(s=>({s:prefix==='work-v2:'?(s.id==='g-email'?{...s,title:'이전 문의 6건 실습'}:{...s,...extended.steps[s.id]}):s,key:prefix+s.id}))});
- }
- variants.push({label:'문의 30건 업무실습 기록',entries:[{s:stepData('g-email'),key:'work-v3:g-email'}]});
- variants.push({label:'추가 실습 기록',entries:practiceBank.cases.map(c=>({s:c,key:'practice-'+c.id}))});
- const comparisonText=Object.keys(saved.comparisons||{}).length?'\n\n## 같은 업무 소요 시간 기록\n\n'+JSON.stringify(saved.comparisons,null,2):'';
- const text='# 교직원 AI 실무 · 나의 검토 기록\n\n'+variants.map(v=>'## '+v.label+'\n\n'+v.entries.map(({s,key})=>`### ${s.title}\n완료: ${saved.done.includes(key)?'예':'아니오'}\n\n${saved.notes[key]||'(기록 없음)'}`).join('\n\n')).join('\n\n')+comparisonText;
- if(notesUrl)URL.revokeObjectURL(notesUrl);notesUrl=URL.createObjectURL(new Blob([text],{type:'text/markdown;charset=utf-8'}));document.querySelector('#notes-preview').value=text;document.querySelector('#notes-download').href=notesUrl;document.querySelector('#notes-dialog').showModal()
-}
-
-function selectPrompt(pre){const selection=window.getSelection(),range=document.createRange();range.selectNodeContents(pre);selection.removeAllRanges();selection.addRange(range)}
-
-function render(){let id=decodeURIComponent(location.hash.slice(1))||'orientation';if(!extraRoute(id)&&!freeRouteIds.includes(id)&&id!=='instructor'&&id!=='resources'&&id!=='orientation'&&!data.steps.some(s=>s.id===id))id='orientation';currentId=id;const c=practiceCase(id);const s=c?{...c,id}:id==='orientation'?data.orientation:stepData(id);document.querySelector('#lesson').innerHTML=id==='slides'?slidesPage():id==='practice-bank'?practiceIndex():c?practiceDetail(c):freeRouteIds.includes(id)?freeGuide():id==='instructor'?instructorPage():id==='resources'?resources():id==='orientation'?home():step(s);decoratePage(id);bindExtras();bindReading();if(id!=='slides')document.body.classList.remove('slide-focus');document.title=`${id==='slides'?'강의 슬라이드':id==='practice-bank'?'추가 실습':freeRouteIds.includes(id)?'무료 계정 사용 안내':id==='instructor'?'강사 소개':id==='resources'?'자료실':s.title} | 교직원 AI 실무`;nav();window.scrollTo({top:0,left:0,behavior:'instant'});document.querySelector('#result-note')?.addEventListener('input',e=>{saved.notes[levelKey(id)]=e.target.value;persist()});document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const p=b.dataset.copy==='main'?s.prompt:s.followupPrompts[Number(b.dataset.copy.split('-')[1])].prompt;const pre=b.closest('.prompt-card').querySelector('pre');selectPrompt(pre);try{await Promise.race([navigator.clipboard.writeText(p),new Promise((_,reject)=>setTimeout(()=>reject(Error('copy timeout')),1500))]);toast(id==='g-email'&&isExtended()?'질문을 복사했습니다. 37번 합본 파일을 첨부한 뒤 붙여넣으세요.':'질문 전체를 복사했습니다. 도구의 입력란에 붙여넣으세요.')}catch{toast('자동 복사가 제한됐습니다. 선택된 내용을 Ctrl+C로 복사하세요.')}}));document.querySelectorAll('[data-expand]').forEach(b=>b.addEventListener('click',()=>{const open=b.closest('.prompt-card').classList.toggle('expanded');b.textContent=open?'접기':'전체 펼치기'}));document.querySelector('[data-complete]')?.addEventListener('click',()=>{const key=levelKey(id);saved.done=saved.done.includes(key)?saved.done.filter(x=>x!==key):[...saved.done,key];persist();const y=window.scrollY;render();window.scrollTo({top:y,left:0,behavior:'instant'})});document.querySelector('#export-notes')?.addEventListener('click',exportNotes);document.querySelectorAll('.zoom').forEach(b=>b.addEventListener('click',()=>{const d=document.querySelector('#image-dialog');d.querySelector('img').src=b.dataset.src;d.querySelector('img').alt=b.dataset.caption;d.querySelector('p').textContent=b.dataset.caption;d.showModal()}))}
-document.querySelector('#reset-progress').addEventListener('click',()=>{saved.done=[];persist();nav();toast('진행 표시를 초기화했습니다. 검토 기록은 유지됩니다.');if(currentId!=='resources')render()});
-Promise.all(['lesson-data.json','instructor.json','extended-data.json','free-plan-data.json','practice-bank.json','lesson-enrichment.json','slides.json'].map(file=>fetch(file,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('자료 로드 실패');return r.json()}))).then(([d,p,e,f,b,l,z])=>{data=d;instructor=p;extended=e;freePlans=f;practiceBank=b;lessonEnrichment=l;slideDeck=z;persist();render();window.addEventListener('hashchange',render);document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>{if(saved.materialLevel===b.dataset.level)return;saved.materialLevel=b.dataset.level;persist();const start=currentId.startsWith('n-')?'n-create':currentId.startsWith('c-')?'c-outline':currentId;if(start!==currentId)location.hash=start;else render();toast(levelName()+'으로 바꿨습니다. 선택한 자료로 새 대화 또는 새 노트북을 시작하세요.')}))}).catch(()=>{document.querySelector('#lesson').innerHTML='<h1>실습자료를 불러오지 못했습니다.</h1><p>GitHub Pages 주소 또는 로컬 미리보기 서버로 접속해 주세요. HTML 파일을 직접 열면 브라우저가 자료 읽기를 제한할 수 있습니다.</p><a href="downloads/실습자료.zip">실습자료 받기</a>'});
-
-document.querySelector('.skip').addEventListener('click',event=>{event.preventDefault();document.querySelector('#lesson').focus();document.querySelector('#lesson').scrollIntoView({block:'start'});});
+const getJson = f => fetch(f, { cache: 'no-store' }).then(r => { if (!r.ok) throw Error(f); return r.json(); });
+Promise.all([
+  getJson('lesson-data.json'), getJson('professor-practice.json'), getJson('instructor.json'), getJson('free-plan-data.json'),
+  getJson('slides.json').catch(() => null),
+  fetch(fileUrl('downloads/교수실습/06_복사용_질문모음.md'), { cache: 'no-store' }).then(r => r.ok ? r.text() : '').catch(() => '')
+]).then(([c, p, i, f, s, md]) => {
+  course = c; practice = p; instructor = i; freePlans = f; deck = s;
+  try { promptBook = md ? parsePromptBook(md) : {}; } catch { promptBook = {}; }
+  slideIndex = Number(saved.slide) || 0;
+  render();
+  window.addEventListener('hashchange', render);
+}).catch(err => {
+  document.querySelector('#lesson').innerHTML = `<div class="page"><h1>실습 자료를 불러오지 못했습니다.</h1><p class="lead">GitHub Pages 주소나 로컬 미리보기 서버로 열어 주세요. HTML 파일을 바로 열면 브라우저가 자료 읽기를 막습니다.</p><p><a class="btn btn-primary" href="downloads/교수실습_자료.zip" download>실습 자료 받기 ↓</a></p></div>`;
+  console.error(err);
+});
