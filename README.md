@@ -1,4 +1,4 @@
-# 교수 AI 활용 실습 (v2.0)
+# 교수 AI 활용 실습 (v2.1)
 
 경남대학교 교수 대상 3시간 생성형 AI 실습입니다. **메일은 AI가 먼저 읽고, 판단은 교수님이 합니다.** 학생 메일, 논문, 강의평가, 강의계획서를 가상 자료로 직접 다뤄 보고 내일 해 볼 업무 하나를 정합니다.
 
@@ -22,8 +22,8 @@
 
 - `docs/downloads/교수실습/` — 참가자 자료 00–06
 - `docs/downloads/교수실습_자료.zip` — 참가자 자료 묶음(해설 제외). 00–06을 고치면 `교수실습/` 폴더를 90 해설만 빼고 다시 압축합니다.
-- `docs/downloads/강의용/` — 강의 슬라이드 PPT·PDF (v2.0, 50장)
-- **강사 진행안** = `docs/slides.json`의 발표자 노트(50장, 장마다 시간·말할 내용·질문). **정답과 확인 기준** = `docs/downloads/교수실습/90_교수실습_해설.md`. 둘 다 참가자에게 미리 나눠 주지 않습니다. 사이트의 발표자 노트는 `강사용 노트 보기`를 누르거나 주소에 `?instructor`를 붙였을 때만 보입니다.
+- `docs/downloads/강의용/` — 강의 슬라이드 PPT·PDF (v2.1, 56장). 실제 실행 화면 7장(10·19·21·24·27·32·37번)은 2026-10-01에 강사가 Claude와 Gemini Notebook으로 실습 질문을 그대로 돌려 찍은 화면입니다.
+- **강사 진행안** = `docs/slides.json`의 발표자 노트(56장, 장마다 시간·말할 내용·질문). **정답과 확인 기준** = `docs/downloads/교수실습/90_교수실습_해설.md`. 둘 다 참가자에게 미리 나눠 주지 않습니다. 사이트의 발표자 노트는 `강사용 노트 보기`를 누르거나 주소에 `?instructor`를 붙였을 때만 보입니다.
 - 이전 교직원 과정(v1.x) 자료는 사이트에서 뺐습니다. git 기록과 `제작자료/archive-v1/`에 남아 있습니다.
 
 ## 사이트 구성
@@ -32,11 +32,12 @@
 
 - `index.html`, `styles.css`, `app.js` — 해시 라우터 한 파일. 경로: `#orientation`, `#instructor`, `#why-ai`, `#demo-email`, `#tool-comparison`, `#notebooklm-papers`, `#claude-evaluations`, `#gemini-syllabus`, `#student-ai-use`, `#tomorrow`, `#free-guide`, `#slides`, `#resources`
 - `lesson-data.json` — 홈·시간표·왜 AI인가·도구 비교표와 도구 지도(출처 포함)·내일 할 일
-- `professor-practice.json` — 실습 페이지(목표, 시간, 도구, 파일, 순서, 확인할 한 곳)
+- `professor-practice.json` — 실습 페이지(목표, 시간, 도구, 파일, 순서, 확인할 한 곳, 실제 실행 화면)
+- `assets/captures/` — 실습 페이지의 실제 실행 화면(2026-10-01, 계정 정보와 주소창은 잘라 냄)
 - `downloads/교수실습/06_복사용_질문모음.md` — 실습 페이지의 복사용 질문을 이 파일에서 직접 읽습니다
 - `slides.json` — 슬라이드 뷰어(장 수와 관계없이 동작), `instructor.json`, `free-plan-data.json`
 
-읽기 기준: 본문 19px, 15px 미만 글자 없음, 본문 폭 720px, 발표 자료와 같은 색(Gemini 파랑, Gemini Notebook 초록, Claude 테라코타).
+디자인: v1.9의 톤으로 되돌렸습니다. 사이트는 흰 종이 바탕에 보라 강조 한 가지와 얇은 선, 본문 18px입니다. 슬라이드는 종이색 바탕, 짙은 녹색 글자, 주황 강조 한 가지, Noto Sans KR입니다. 도구마다 다른 색은 쓰지 않고 이름으로 구분합니다.
 
 로컬 확인:
 

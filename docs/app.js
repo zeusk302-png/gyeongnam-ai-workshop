@@ -1,5 +1,5 @@
 'use strict';
-/* 교수 AI 활용 실습 v2.0 — single-file hash router */
+/* 교수 AI 활용 실습 v2.1 — single-file hash router */
 
 let course, practice, instructor, freePlans, deck, promptBook = {}, currentId = 'orientation', toastTimer;
 let slideIndex = 0;
@@ -200,7 +200,14 @@ function practicePage(id) {
 
   <section class="section"><h2>확인할 한 곳</h2><div class="callout practice"><p class="check-callout">${esc(s.check)}</p></div>
     ${privacyCallout()}${stuckCallout()}</section>
+  ${capturesSection(s.captures)}
   ${doneButton(id)}${pager(id)}</div>`;
+}
+
+function capturesSection(c) {
+  if (!c?.items?.length) return '';
+  return `<section class="section"><h2>실제 실행 화면</h2><p>${esc(c.note)}</p>
+    <div class="shots">${c.items.map((x, i) => `<figure class="shot-figure"><img src="${esc(x.src)}" alt="${esc(x.title)}" loading="lazy"><figcaption><strong>${i + 1}. ${esc(x.title)}</strong>${esc(x.caption)}</figcaption></figure>`).join('')}</div></section>`;
 }
 
 function toolComparisonPage() {
