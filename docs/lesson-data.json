@@ -1,600 +1,716 @@
 {
- "version": "2.0.0",
- "title": "교수 AI 활용 실습",
- "description": "경남대학교 교수 대상 3시간 생성형 AI 실습. 학생 메일, 논문, 강의평가, 강의계획서를 가상 자료로 직접 다뤄 봅니다.",
- "zip": "downloads/교수실습_자료.zip",
- "tools": {
-  "gemini": {
-   "name": "Gemini",
-   "url": "https://gemini.google.com/app"
-  },
-  "notebook": {
-   "name": "Gemini Notebook (구 NotebookLM)",
-   "short": "Gemini Notebook",
-   "url": "https://notebooklm.google.com/"
-  },
-  "claude": {
-   "name": "Claude",
-   "url": "https://claude.ai/new"
-  },
-  "mixed": {
-   "name": "Claude 또는 Gemini",
-   "url": ""
-  }
- },
- "sectionTools": {
-  "demo-email": "mixed",
-  "notebooklm-papers": "notebook",
-  "claude-evaluations": "claude",
-  "gemini-syllabus": "gemini",
-  "student-ai-use": "mixed"
- },
- "hero": {
-  "kicker": "경남대학교 교수 대상 · 생성형 AI 실습 3시간",
-  "title": [
-   "메일은 AI가 먼저 읽고,",
-   "판단은 교수님이 합니다"
-  ],
-  "lead": "학생 메일, 논문, 강의평가, 강의계획서를 가상 자료로 직접 다뤄 보고, 내일 해 볼 업무 하나를 정합니다.",
-  "outcomes": [
-   {
-    "tool": "mixed",
-    "text": "학생 메일 40통 → 유형 분류와 답장 초안",
-    "route": "demo-email"
-   },
-   {
-    "tool": "notebook",
-    "text": "논문 5편 → 인용이 달린 비교표",
-    "route": "notebooklm-papers"
-   },
-   {
-    "tool": "claude",
-    "text": "강의평가 180개 → 다음 학기 개선 계획",
-    "route": "claude-evaluations"
-   },
-   {
-    "tool": "gemini",
-    "text": "강의계획서 → 루브릭과 AI 사용 원칙",
-    "route": "gemini-syllabus"
-   }
-  ]
- },
- "timeline": [
-  {
-   "start": 0,
-   "end": 15,
-   "route": "why-ai",
-   "title": "교수님의 한 주는 어디로 새는가",
-   "kind": "설명",
-   "tool": ""
-  },
-  {
-   "start": 15,
-   "end": 20,
-   "route": "demo-email",
-   "title": "라이브 데모: 학생 메일 40통",
-   "kind": "강사 시연",
-   "tool": "mixed"
-  },
-  {
-   "start": 20,
-   "end": 25,
-   "route": "tool-comparison",
-   "title": "도구 지도·질문 공식·개인정보",
-   "kind": "설명",
-   "tool": "search"
-  },
-  {
-   "start": 25,
-   "end": 70,
-   "route": "notebooklm-papers",
-   "title": "논문 5편 비교표와 인용 확인",
-   "kind": "실습",
-   "tool": "notebook"
-  },
-  {
-   "start": 70,
-   "end": 105,
-   "route": "claude-evaluations",
-   "title": "강의평가 180개에서 개선점 찾기",
-   "kind": "실습",
-   "tool": "claude"
-  },
-  {
-   "start": 105,
-   "end": 115,
-   "route": "",
-   "title": "휴식",
-   "kind": "10분",
-   "tool": "break"
-  },
-  {
-   "start": 115,
-   "end": 150,
-   "route": "gemini-syllabus",
-   "title": "강의계획서·루브릭·학칙 근거 답장",
-   "kind": "실습",
-   "tool": "gemini"
-  },
-  {
-   "start": 150,
-   "end": 170,
-   "route": "student-ai-use",
-   "title": "학생의 AI 사용: 과제와 수업 정책",
-   "kind": "실습",
-   "tool": "mixed"
-  },
-  {
-   "start": 170,
-   "end": 180,
-   "route": "tomorrow",
-   "title": "내일 해 볼 업무 하나 · 무료 계정 안내",
-   "kind": "정리",
-   "tool": ""
-  }
- ],
- "prep": [
-  {
-   "title": "세 도구에 로그인",
-   "text": "Gemini, Gemini Notebook, Claude를 새 탭에 열어 둡니다. 무료 계정으로 충분합니다.",
-   "route": "free-guide",
-   "link": "무료 계정 안내"
-  },
-  {
-   "title": "실습 자료 받기",
-   "text": "가상 대학의 메일·논문·강의평가·학칙·계획서 파일입니다. 한 번에 받을 수 있습니다.",
-   "href": "downloads/교수실습_자료.zip",
-   "link": "자료 전체 받기 (zip)"
-  },
-  {
-   "title": "학교 계정 확인",
-   "text": "자료는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에 넣습니다. 학교가 Google과 Microsoft 365 중 무엇을 쓰는지 미리 확인해 두세요.",
-   "route": "tool-comparison",
-   "link": "도구 지도에서 보기"
-  }
- ],
- "whyAi": {
-  "title": "교수님의 한 주는 어디로 새는가",
-  "lead": "읽기·분류·초안은 AI에게 먼저 맡기고, 판단·승인·관계는 교수님이 맡습니다.",
-  "poll": {
-   "question": "이번 주에 이 중 몇 가지를 하셨나요?",
-   "items": [
-    {
-     "title": "학생 메일 답장",
-     "text": "비슷한 연장·출석 문의에 또 답장합니다"
+  "version": "2.0.0",
+  "title": "교수 AI 활용 실습",
+  "description": "경남대학교 교수 대상 3시간 생성형 AI 실습. 학생 메일, 논문, 강의평가, 강의계획서를 가상 자료로 직접 다뤄 봅니다.",
+  "zip": "downloads/교수실습_자료.zip",
+  "tools": {
+    "gemini": {
+      "name": "Gemini",
+      "url": "https://gemini.google.com/app"
     },
-    {
-     "title": "논문 읽고 정리",
-     "text": "다섯 편째 읽으면 첫 편이 흐려집니다"
-    },
-    {
-     "title": "강의평가 읽기",
-     "text": "서술형 수백 개 중 앞의 몇 개만 봅니다"
-    },
-    {
-     "title": "강의계획서·루브릭",
-     "text": "작년 것을 열어 날짜만 고칩니다"
-    },
-    {
-     "title": "연구 보고서",
-     "text": "흩어진 실적을 양식에 옮겨 적습니다"
-    },
-    {
-     "title": "회의록·공문",
-     "text": "회의는 끝났는데 정리가 남습니다"
-    }
-   ]
-  },
-  "split": {
-   "ai": {
-    "title": "AI에게 먼저 맡길 일",
-    "items": [
-     "메일 40통을 유형별로 나누기",
-     "논문 5편을 한 표로 비교하기",
-     "강의평가 180개를 주제별로 세기",
-     "강의계획서 초안에서 틀린 곳 찾기"
-    ]
-   },
-   "human": {
-    "title": "교수님이 할 일",
-    "items": [
-     "학칙을 적용하고 예외를 판단하기",
-     "성적과 출석을 결정하기",
-     "학생에게 보낼 최종 답장 고르기",
-     "인용할 수치를 원문에서 확인하기"
-    ]
-   }
-  },
-  "formula": [
-   {
-    "label": "역할",
-    "meaning": "AI가 누구처럼 일할지",
-    "example": "너는 대학 교수의 메일 정리를 돕는 조교야."
-   },
-   {
-    "label": "자료",
-    "meaning": "무엇을 보고 답할지",
-    "example": "첨부한 메일 40개만 봐."
-   },
-   {
-    "label": "원하는 형태",
-    "meaning": "표, 개수, 길이, 순서",
-    "example": "표 하나로. 열은 '번호 | 유형 | 요청 한 줄'."
-   },
-   {
-    "label": "하지 말 것",
-    "meaning": "지어내기, 개인정보, 단정",
-    "example": "메일에 없는 사실을 만들지 마."
-   }
-  ],
-  "privacy": "개인정보·성적·미발표 연구는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에 넣고, 이름·학번은 지우고 넣습니다.",
-  "measure": "AI가 줄여 주는 시간은 오늘 이 방에서 직접 잽니다. 강사 리허설에서는 메일 40통 분류에 약 {minutes}분이 걸렸습니다.",
-  "result": {
-   "title": "먼저 결과부터 보여 드립니다",
-   "lead": "월요일 아침 학생 메일 40통. AI가 먼저 읽고 나누면 이렇게 정리됩니다.",
-   "funnel": [
-    {
-     "n": 40,
-     "label": "받은 메일"
-    },
-    {
-     "n": 38,
-     "label": "처리할 건",
-     "note": "재발송·후속 메일 2통을 한 건으로"
-    },
-    {
-     "n": 37,
-     "label": "답장할 건",
-     "note": "외부 홍보 메일 1통 제외"
-    }
-   ],
-   "types": [
-    [
-     "출석·공결",
-     9
-    ],
-    [
-     "과제 연장·제출",
-     8
-    ],
-    [
-     "성적·시험",
-     6
-    ],
-    [
-     "수강신청·철회",
-     4
-    ],
-    [
-     "면담 요청",
-     4
-    ],
-    [
-     "추천서",
-     3
-    ],
-    [
-     "수업 내용 질문",
-     3
-    ],
-    [
-     "기타",
-     3
-    ]
-   ],
-   "source": "가상 자료 01_학생메일_40통.txt 기준, 강사용 해설과 대조한 정답",
-   "rehearsal": {
-    "label": "강사 리허설 실측",
-    "task": "메일 40통 유형 분류",
-    "minutes": null
-   },
-   "judgement": "그다음 교수님은 판단이 필요한 메일만 봅니다. 예: 결석 7회인 학생에게 '한 번 더 결석하면 F'라고 안내하는 일."
-  },
-  "cases": [],
-  "casesTitle": "다른 대학 교수들은 이렇게 씁니다"
- },
- "toolComparison": {
-  "title": "도구 지도: 무엇을 근거로 답하나",
-  "lead": "도구는 이름보다 '무엇을 근거로 답하는가'로 고르면 쉽습니다. 기능과 요금은 자주 바뀌니 쓰기 전에 확인하세요.",
-  "checkedAt": "2026-09-30",
-  "takeaway": "개인정보·성적·미발표 연구는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에. 이름·학번은 지우고.",
-  "notice": "클로바X는 2026년 4월 9일 서비스를 종료해 목록에서 뺐습니다. NotebookLM은 2026년 7월 16일 Gemini Notebook으로 이름이 바뀌었습니다. 주소와 기능은 같습니다.",
-  "noticeSources": [
-   {
-    "title": "ZDNet Korea: 클로바X 종료",
-    "url": "https://zdnet.co.kr/view/?no=20260225180559"
-   },
-   {
-    "title": "Google 블로그: Gemini Notebook",
-    "url": "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/"
-   }
-  ],
-  "groups": [
-   {
-    "id": "general",
-    "title": "글쓰기·생각 파트너",
-    "basis": "모델이 배운 지식으로 답합니다. 필요하면 웹 검색을 더합니다.",
-    "tools": [
-     {
-      "name": "Claude",
-      "accent": "claude",
-      "bestFor": "긴 문서를 읽고 다시 짜기, 루브릭·강의계획서 초안, 말투를 맞춘 답장. 프로젝트 기능으로 과목별 자료를 묶어 둘 수 있습니다.",
-      "caution": "개인 계정(Free·Pro·Max)은 'Claude 개선에 도움' 설정을 켜면 대화가 학습에 쓰이고 최대 5년 보관됩니다. 끄고 쓰세요. 기관 계약(Claude for Education)은 학습에 쓰지 않습니다.",
-      "sources": [
-       {
-        "title": "Anthropic 소비자 약관 변경",
-        "url": "https://www.anthropic.com/news/updates-to-our-consumer-terms"
-       },
-       {
-        "title": "Claude 도움말",
-        "url": "https://support.claude.com/en/articles/11139144"
-       }
-      ]
-     },
-     {
-      "name": "ChatGPT",
-      "accent": "chatgpt",
-      "bestFor": "범용 초안, 표·파일 분석, 이미지와 음성.",
-      "caution": "개인 계정(Free·Plus·Pro)은 학습 사용이 기본으로 켜져 있습니다. 설정 → 데이터 제어 → '모두를 위한 모델 개선'을 끄세요.",
-      "sources": [
-       {
-        "title": "OpenAI 데이터 제어 FAQ",
-        "url": "https://help.openai.com/en/articles/7730893-data-controls-faq"
-       }
-      ]
-     },
-     {
-      "name": "Gemini (앱)",
-      "accent": "gemini",
-      "bestFor": "Google Docs·Gmail·Drive와 연결한 요약과 초안.",
-      "caution": "학교 Google Workspace for Education 계정은 사람 검토와 모델 학습에 쓰지 않습니다. 개인 계정은 'Gemini 앱 활동' 설정을 확인하세요.",
-      "sources": [
-       {
-        "title": "Google: 교육용 Gemini 데이터 보호",
-        "url": "https://blog.google/products-and-platforms/products/education/gemini-enterprise-grade-data-protection/"
-       }
-      ]
-     },
-     {
-      "name": "뤼튼",
-      "accent": "wrtn",
-      "bestFor": "한국어 화면에서 여러 모델을 무료로 써 보기.",
-      "caution": "어떤 모델이 답했는지 분명하지 않을 수 있습니다. 약관과 데이터 설정을 직접 확인하세요.",
-      "sources": [
-       {
-        "title": "wrtn.ai",
-        "url": "https://wrtn.ai"
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "id": "grounded",
-    "title": "내 문서만 근거로",
-    "basis": "내가 올린 파일 안에서만 답하고, 답마다 출처를 표시합니다.",
-    "tools": [
-     {
+    "notebook": {
       "name": "Gemini Notebook (구 NotebookLM)",
-      "accent": "notebook",
-      "bestFor": "논문·강의평가·규정 파일을 올려 그 안에서만 답을 받기. 답의 번호를 누르면 원문 위치가 열립니다. 오디오 요약도 만듭니다.",
-      "caution": "올린 자료 밖의 지식은 약합니다. 스캔 PDF는 글자가 제대로 읽혔는지 확인하세요. 제품 안내상 업로드 자료로 모델을 학습하지 않습니다.",
-      "sources": [
-       {
-        "title": "Google Workspace: NotebookLM",
-        "url": "https://workspace.google.com/products/notebooklm/"
-       },
-       {
-        "title": "Google 블로그: 이름 변경",
-        "url": "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/"
-       }
-      ]
-     },
-     {
-      "name": "Claude·ChatGPT 프로젝트",
-      "accent": "claude",
-      "bestFor": "과목별 자료를 묶어 두고 같은 질문을 반복해서 쓰기.",
-      "caution": "출처 표시는 Gemini Notebook보다 약합니다. 학습 설정은 위의 개인 계정 설정과 같습니다.",
-      "sources": []
-     }
-    ]
-   },
-   {
-    "id": "search",
-    "title": "웹·논문 검색",
-    "basis": "웹이나 학술 데이터베이스를 찾아 답합니다. 없는 논문이나 틀린 수치가 섞일 수 있습니다.",
-    "tools": [
-     {
-      "name": "Perplexity",
-      "accent": "search",
-      "bestFor": "출처 링크가 달린 웹 검색 답변. 최신 정책·뉴스 찾기.",
-      "caution": "무료·Pro 모두 'AI data retention'이 기본으로 켜져 있습니다. 설정에서 끄거나 시크릿 모드를 쓰세요.",
-      "sources": [
-       {
-        "title": "Perplexity 데이터 수집 안내",
-        "url": "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity"
-       }
-      ]
-     },
-     {
-      "name": "Consensus",
-      "accent": "search",
-      "bestFor": "'이 질문에 연구들은 예·아니오·혼재 중 무엇인가'를 요약하고 저널로 거르기.",
-      "caution": "질문형으로 물어야 잘 됩니다. 요약만 보고 인용하지 마세요.",
-      "sources": [
-       {
-        "title": "consensus.app",
-        "url": "https://consensus.app"
-       }
-      ]
-     },
-     {
-      "name": "Elicit",
-      "accent": "search",
-      "bestFor": "논문을 찾고 항목을 뽑아 문헌 검토 표 만들기.",
-      "caution": "무료는 추출 열과 리포트 수가 제한됩니다. 뽑힌 수치는 원문 쪽수와 대조하세요.",
-      "sources": [
-       {
-        "title": "elicit.com",
-        "url": "https://elicit.com"
-       }
-      ]
-     },
-     {
-      "name": "SciSpace",
-      "accent": "search",
-      "bestFor": "논문 PDF와 대화하며 어려운 문단 설명 듣기.",
-      "caution": "무료로 쓸 수 있는 범위는 사이트에서 확인하세요.",
-      "sources": [
-       {
-        "title": "scispace.com",
-        "url": "https://scispace.com"
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "id": "school",
-    "title": "학교 계정으로 쓰는 도구",
-    "basis": "기관 약관이 적용되어 자료 보호가 가장 확실합니다. 학교가 어떤 계정을 쓰는지 전산원에 먼저 확인하세요.",
-    "tools": [
-     {
-      "name": "Copilot Chat (학교 Microsoft 365 계정)",
-      "accent": "copilot",
-      "bestFor": "Word·Outlook·Teams 안에서 초안과 요약. 학교 A1·A3·A5 라이선스 계정이면 무료입니다.",
-      "caution": "개인 Microsoft 계정의 Copilot과 헷갈리기 쉽습니다. 화면의 방패 아이콘이나 '보호됨' 표시를 확인하세요. 기업용 데이터 보호가 적용되어 기초 모델 학습에 쓰지 않습니다.",
-      "sources": [
-       {
-        "title": "Microsoft: 기업용 데이터 보호",
-        "url": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
-       }
-      ]
-     },
-     {
-      "name": "Gemini·Gemini Notebook (학교 Google 계정)",
-      "accent": "gemini",
-      "bestFor": "학교 Docs·Gmail·Drive 안에서 요약과 초안.",
-      "caution": "학교가 Google Workspace for Education을 쓰는지 먼저 확인하세요. 교육용 핵심 서비스로 제공되면 사람 검토와 모델 학습에 쓰지 않습니다.",
-      "sources": [
-       {
-        "title": "Google Workspace 업데이트",
-        "url": "https://workspaceupdates.googleblog.com/2025/04/notebookLM-and-gemini-app-core-services-for-education-customers.html"
-       },
-       {
-        "title": "Google Workspace 개인정보 허브",
-        "url": "https://knowledge.workspace.google.com/admin/generative-ai/generative-ai-in-google-workspace-privacy-hub"
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "table": {
-   "columns": [
-    "도구",
-    "답의 근거",
-    "잘하는 일",
-    "약한 곳",
-    "무료",
-    "학습 설정"
-   ],
-   "rows": [
-    {
-     "tool": "Gemini Notebook (구 NotebookLM)",
-     "accent": "notebook",
-     "basis": "내가 올린 문서만",
-     "good": "논문·강의평가·규정에서 출처 번호 달린 답, 오디오 요약",
-     "weak": "올린 자료 밖의 지식, 스캔 PDF",
-     "free": "있음 (Google 계정)",
-     "training": "업로드 자료로 학습 안 함(제품 안내)"
+      "short": "Gemini Notebook",
+      "url": "https://notebooklm.google.com/"
     },
-    {
-     "tool": "Claude",
-     "accent": "claude",
-     "basis": "모델 지식 (+웹 검색 선택)",
-     "good": "긴 문서 재구성, 루브릭·계획서 초안, 말투 맞춘 답장",
-     "weak": "출처 표시가 약함, 긴 대화는 무료 한도에 빨리 닿음",
-     "free": "있음",
-     "training": "개인 계정: 'Claude 개선에 도움' 끄기"
+    "claude": {
+      "name": "Claude",
+      "url": "https://claude.ai/new"
     },
-    {
-     "tool": "Gemini",
-     "accent": "gemini",
-     "basis": "모델 지식 + Google 검색·Workspace",
-     "good": "Docs·Gmail·Drive와 연결한 요약·초안",
-     "weak": "개인 계정과 학교 계정의 보호 수준이 다름",
-     "free": "있음",
-     "training": "학교 계정: 학습 없음 · 개인: 'Gemini 앱 활동' 확인"
-    },
-    {
-     "tool": "ChatGPT",
-     "accent": "chatgpt",
-     "basis": "모델 지식 (+웹 검색)",
-     "good": "범용 초안, 표·파일 분석",
-     "weak": "개인 계정은 학습이 기본으로 켜짐",
-     "free": "있음",
-     "training": "데이터 제어 → '모두를 위한 모델 개선' 끄기"
-    },
-    {
-     "tool": "Copilot Chat (학교 M365)",
-     "accent": "copilot",
-     "basis": "모델 지식 + 웹, 학교 계정 보호",
-     "good": "Word·Outlook·Teams 안에서 초안·요약",
-     "weak": "개인 Microsoft 계정판과 헷갈림",
-     "free": "학교 A1·A3·A5 라이선스면 무료",
-     "training": "기초 모델 학습 안 함('보호됨' 표시 확인)"
-    },
-    {
-     "tool": "Perplexity · Consensus · Elicit",
-     "accent": "search",
-     "basis": "웹·학술 데이터베이스 검색",
-     "good": "출처 링크 달린 검색, 연구 결과 요약, 문헌 검토 표",
-     "weak": "없는 논문·틀린 수치가 섞일 수 있음",
-     "free": "있음 (기능·횟수 제한)",
-     "training": "Perplexity: 데이터 보관 기본 켜짐 → 끄기"
-    },
-    {
-     "tool": "뤼튼",
-     "accent": "wrtn",
-     "basis": "여러 모델 (한국어 화면)",
-     "good": "무료로 여러 모델 써 보기",
-     "weak": "어떤 모델이 답했는지 불분명할 수 있음",
-     "free": "무료 중심",
-     "training": "약관·설정 직접 확인"
+    "mixed": {
+      "name": "Claude 또는 Gemini",
+      "url": ""
     }
-   ]
-  }
- },
- "tomorrow": {
-  "title": "내일 해 볼 업무 하나",
-  "lead": "오늘 쓴 방법을 교수님 업무 하나에 옮겨 봅니다. 작게 시작하고, 확인할 곳 하나를 정해 둡니다.",
-  "ideas": [
-   {
-    "text": "이번 주 학생 메일을 유형별로 나누기",
-    "tool": "claude"
-   },
-   {
-    "text": "다음에 읽을 논문 3편을 한 표로 비교하기",
-    "tool": "notebook"
-   },
-   {
-    "text": "지난 학기 서술형 강의평가를 주제별로 세기",
-    "tool": "claude"
-   },
-   {
-    "text": "다음 학기 강의계획서에 AI 사용 원칙 넣기",
-    "tool": "gemini"
-   },
-   {
-    "text": "학과 회의 메모에서 결정·담당·기한 표 만들기",
-    "tool": "gemini"
-   }
+  },
+  "sectionTools": {
+    "demo-email": "mixed",
+    "notebooklm-papers": "notebook",
+    "claude-evaluations": "claude",
+    "gemini-syllabus": "gemini",
+    "student-ai-use": "mixed"
+  },
+  "hero": {
+    "kicker": "경남대학교 교수 대상 · 생성형 AI 실습 3시간",
+    "title": [
+      "메일은 AI가 먼저 읽고,",
+      "판단은 교수님이 합니다"
+    ],
+    "lead": "학생 메일, 논문, 강의평가, 강의계획서를 가상 자료로 직접 다뤄 보고, 내일 해 볼 업무 하나를 정합니다.",
+    "outcomes": [
+      {
+        "tool": "mixed",
+        "text": "학생 메일 40통 → 유형 분류와 답장 초안",
+        "route": "demo-email"
+      },
+      {
+        "tool": "notebook",
+        "text": "논문 5편 → 인용이 달린 비교표",
+        "route": "notebooklm-papers"
+      },
+      {
+        "tool": "claude",
+        "text": "강의평가 180개 → 다음 학기 개선 계획",
+        "route": "claude-evaluations"
+      },
+      {
+        "tool": "gemini",
+        "text": "강의계획서 → 루브릭과 AI 사용 원칙",
+        "route": "gemini-syllabus"
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "start": 0,
+      "end": 15,
+      "route": "why-ai",
+      "title": "교수님의 한 주는 어디로 새는가",
+      "kind": "설명",
+      "tool": ""
+    },
+    {
+      "start": 15,
+      "end": 20,
+      "route": "demo-email",
+      "title": "라이브 데모: 학생 메일 40통",
+      "kind": "강사 시연",
+      "tool": "mixed"
+    },
+    {
+      "start": 20,
+      "end": 25,
+      "route": "tool-comparison",
+      "title": "도구 지도·질문 공식·개인정보",
+      "kind": "설명",
+      "tool": "search"
+    },
+    {
+      "start": 25,
+      "end": 70,
+      "route": "notebooklm-papers",
+      "title": "논문 5편 비교표와 인용 확인",
+      "kind": "실습",
+      "tool": "notebook"
+    },
+    {
+      "start": 70,
+      "end": 105,
+      "route": "claude-evaluations",
+      "title": "강의평가 180개에서 개선점 찾기",
+      "kind": "실습",
+      "tool": "claude"
+    },
+    {
+      "start": 105,
+      "end": 115,
+      "route": "",
+      "title": "휴식",
+      "kind": "10분",
+      "tool": "break"
+    },
+    {
+      "start": 115,
+      "end": 150,
+      "route": "gemini-syllabus",
+      "title": "강의계획서·루브릭·학칙 근거 답장",
+      "kind": "실습",
+      "tool": "gemini"
+    },
+    {
+      "start": 150,
+      "end": 170,
+      "route": "student-ai-use",
+      "title": "학생의 AI 사용: 과제와 수업 정책",
+      "kind": "실습",
+      "tool": "mixed"
+    },
+    {
+      "start": 170,
+      "end": 180,
+      "route": "tomorrow",
+      "title": "내일 해 볼 업무 하나 · 무료 계정 안내",
+      "kind": "정리",
+      "tool": ""
+    }
   ],
-  "checklist": [
-   "이름·학번·연락처를 먼저 지웁니다.",
-   "학교 계정 도구를 씁니다. 없으면 개인 계정에서 학습 설정을 끄고 씁니다.",
-   "결과에서 날짜와 숫자 하나를 골라 원문과 맞춰 봅니다."
-  ]
- }
+  "prep": [
+    {
+      "title": "세 도구에 로그인",
+      "text": "Gemini, Gemini Notebook, Claude를 새 탭에 열어 둡니다. 무료 계정으로 충분합니다.",
+      "route": "free-guide",
+      "link": "무료 계정 안내"
+    },
+    {
+      "title": "실습 자료 받기",
+      "text": "가상 대학의 메일·논문·강의평가·학칙·계획서 파일입니다. 한 번에 받을 수 있습니다.",
+      "href": "downloads/교수실습_자료.zip",
+      "link": "자료 전체 받기 (zip)"
+    },
+    {
+      "title": "학교 계정 확인",
+      "text": "자료는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에 넣습니다. 학교가 Google과 Microsoft 365 중 무엇을 쓰는지 미리 확인해 두세요.",
+      "route": "tool-comparison",
+      "link": "도구 지도에서 보기"
+    }
+  ],
+  "whyAi": {
+    "title": "교수님의 한 주는 어디로 새는가",
+    "lead": "읽기·분류·초안은 AI에게 먼저 맡기고, 판단·승인·관계는 교수님이 맡습니다.",
+    "poll": {
+      "question": "이번 주에 이 중 몇 가지를 하셨나요?",
+      "items": [
+        {
+          "title": "학생 메일 답장",
+          "text": "비슷한 연장·출석 문의에 또 답장합니다"
+        },
+        {
+          "title": "논문 읽고 정리",
+          "text": "다섯 편째 읽으면 첫 편이 흐려집니다"
+        },
+        {
+          "title": "강의평가 읽기",
+          "text": "서술형 수백 개 중 앞의 몇 개만 봅니다"
+        },
+        {
+          "title": "강의계획서·루브릭",
+          "text": "작년 것을 열어 날짜만 고칩니다"
+        },
+        {
+          "title": "연구 보고서",
+          "text": "흩어진 실적을 양식에 옮겨 적습니다"
+        },
+        {
+          "title": "회의록·공문",
+          "text": "회의는 끝났는데 정리가 남습니다"
+        }
+      ]
+    },
+    "split": {
+      "ai": {
+        "title": "AI에게 먼저 맡길 일",
+        "items": [
+          "메일 40통을 유형별로 나누기",
+          "논문 5편을 한 표로 비교하기",
+          "강의평가 180개를 주제별로 세기",
+          "강의계획서 초안에서 틀린 곳 찾기"
+        ]
+      },
+      "human": {
+        "title": "교수님이 할 일",
+        "items": [
+          "학칙을 적용하고 예외를 판단하기",
+          "성적과 출석을 결정하기",
+          "학생에게 보낼 최종 답장 고르기",
+          "인용할 수치를 원문에서 확인하기"
+        ]
+      }
+    },
+    "formula": [
+      {
+        "label": "역할",
+        "meaning": "AI가 누구처럼 일할지",
+        "example": "너는 대학 교수의 메일 정리를 돕는 조교야."
+      },
+      {
+        "label": "자료",
+        "meaning": "무엇을 보고 답할지",
+        "example": "첨부한 메일 40개만 봐."
+      },
+      {
+        "label": "원하는 형태",
+        "meaning": "표, 개수, 길이, 순서",
+        "example": "표 하나로. 열은 '번호 | 유형 | 요청 한 줄'."
+      },
+      {
+        "label": "하지 말 것",
+        "meaning": "지어내기, 개인정보, 단정",
+        "example": "메일에 없는 사실을 만들지 마."
+      }
+    ],
+    "privacy": "개인정보·성적·미발표 연구는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에 넣고, 이름·학번은 지우고 넣습니다.",
+    "measure": "AI가 줄여 주는 시간은 오늘 이 방에서 직접 잽니다. 강사 리허설에서는 메일 40통 분류에 약 {minutes}분이 걸렸습니다.",
+    "result": {
+      "title": "먼저 결과부터 보여 드립니다",
+      "lead": "월요일 아침 학생 메일 40통. AI가 먼저 읽고 나누면 이렇게 정리됩니다.",
+      "funnel": [
+        {
+          "n": 40,
+          "label": "받은 메일"
+        },
+        {
+          "n": 38,
+          "label": "처리할 건",
+          "note": "재발송·후속 메일 2통을 한 건으로"
+        },
+        {
+          "n": 37,
+          "label": "답장할 건",
+          "note": "외부 홍보 메일 1통 제외"
+        }
+      ],
+      "types": [
+        [
+          "출석·공결",
+          9
+        ],
+        [
+          "과제 연장·제출",
+          8
+        ],
+        [
+          "성적·시험",
+          6
+        ],
+        [
+          "수강신청·철회",
+          4
+        ],
+        [
+          "면담 요청",
+          4
+        ],
+        [
+          "추천서",
+          3
+        ],
+        [
+          "수업 내용 질문",
+          3
+        ],
+        [
+          "기타",
+          3
+        ]
+      ],
+      "source": "가상 자료 01_학생메일_40통.txt 기준, 강사용 해설과 대조한 정답",
+      "rehearsal": {
+        "label": "강사 리허설 실측",
+        "task": "메일 40통 유형 분류",
+        "minutes": null
+      },
+      "judgement": "그다음 교수님은 판단이 필요한 메일만 봅니다. 예: 결석 7회인 학생에게 '한 번 더 결석하면 F'라고 안내하는 일."
+    },
+    "cases": [
+      {
+        "id": "anthropic-2025",
+        "on": [
+          "why-ai"
+        ],
+        "title": "대학 교원이 AI에 가장 많이 맡긴 일은 수업 준비였습니다",
+        "figures": [
+          {
+            "n": "57%",
+            "label": "교육과정·수업 자료 개발"
+          },
+          {
+            "n": "13%",
+            "label": "학술 연구"
+          },
+          {
+            "n": "7%",
+            "label": "학생 평가"
+          }
+        ],
+        "text": "고등교육 종사자의 Claude.ai 대화 약 7만 4천 건(2025년 5~6월)을 익명으로 분석한 결과입니다. 채점·평가에 쓴 대화의 48.9%는 AI에 거의 통째로 맡기는 방식이어서 주의가 필요하다고 봤습니다.",
+        "limit": "한 회사, 한 도구(Claude) 이용자의 대화만 본 결과입니다.",
+        "sources": [
+          {
+            "title": "Anthropic Education Report: How educators use Claude (2025-08-27)",
+            "url": "https://www.anthropic.com/news/anthropic-education-report-how-educators-use-claude"
+          }
+        ]
+      },
+      {
+        "id": "dec-2025",
+        "on": [
+          "why-ai",
+          "student-ai-use"
+        ],
+        "title": "교수 83%가 학생이 AI 결과를 따져 보지 못할까 걱정했습니다",
+        "figures": [
+          {
+            "n": "83%",
+            "label": "학생이 AI 결과를 비판적으로 평가하는 능력이 걱정된다"
+          },
+          {
+            "n": "54%",
+            "label": "지금의 학생 평가 방식은 AI 시대에 충분하지 않다"
+          },
+          {
+            "n": "4%",
+            "label": "학교 AI 지침을 잘 알고, 충분하다고 본다"
+          }
+        ],
+        "text": "Digital Education Council이 28개국 52개 기관의 교수 1,681명에게 물은 설문입니다(2025년 1월 발표).",
+        "limit": "참여 기관 교수들의 응답이며, 경남대의 AI 지침 유무는 교무 부서 공지로 확인하세요.",
+        "sources": [
+          {
+            "title": "DEC Global AI Faculty Survey 2025 (2025-01-20)",
+            "url": "https://www.digitaleducationcouncil.com/post/digital-education-council-global-ai-faculty-survey"
+          },
+          {
+            "title": "주요 결과",
+            "url": "https://www.digitaleducationcouncil.com/dec-insights/what-faculty-want-key-results-from-the-global-ai-faculty-survey-2025"
+          }
+        ]
+      }
+    ],
+    "casesTitle": "실제 자료: 교수들은 AI를 이렇게 쓰고, 이렇게 걱정합니다",
+    "casesChecked": "수치는 2026-10-01 원문에서 확인"
+  },
+  "toolComparison": {
+    "title": "도구 지도: 무엇을 근거로 답하나",
+    "lead": "도구는 이름보다 '무엇을 근거로 답하는가'로 고르면 쉽습니다. 기능과 요금은 자주 바뀌니 쓰기 전에 확인하세요.",
+    "checkedAt": "2026-09-30",
+    "takeaway": "개인정보·성적·미발표 연구는 학교 계정 도구(없으면 개인 계정 + 학습 설정 끄기)에. 이름·학번은 지우고.",
+    "notice": "클로바X는 2026년 4월 9일 서비스를 종료해 목록에서 뺐습니다. NotebookLM은 2026년 7월 16일 Gemini Notebook으로 이름이 바뀌었습니다. 주소와 기능은 같습니다.",
+    "noticeSources": [
+      {
+        "title": "ZDNet Korea: 클로바X 종료",
+        "url": "https://zdnet.co.kr/view/?no=20260225180559"
+      },
+      {
+        "title": "Google 블로그: Gemini Notebook",
+        "url": "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/"
+      }
+    ],
+    "groups": [
+      {
+        "id": "general",
+        "title": "글쓰기·생각 파트너",
+        "basis": "모델이 배운 지식으로 답합니다. 필요하면 웹 검색을 더합니다.",
+        "tools": [
+          {
+            "name": "Claude",
+            "accent": "claude",
+            "bestFor": "긴 문서를 읽고 다시 짜기, 루브릭·강의계획서 초안, 말투를 맞춘 답장. 프로젝트 기능으로 과목별 자료를 묶어 둘 수 있습니다.",
+            "caution": "개인 계정(Free·Pro·Max)은 'Claude 개선에 도움' 설정을 켜면 대화가 학습에 쓰이고 최대 5년 보관됩니다. 끄고 쓰세요. 기관 계약(Claude for Education)은 학습에 쓰지 않습니다.",
+            "sources": [
+              {
+                "title": "Anthropic 소비자 약관 변경",
+                "url": "https://www.anthropic.com/news/updates-to-our-consumer-terms"
+              },
+              {
+                "title": "Claude 도움말",
+                "url": "https://support.claude.com/en/articles/11139144"
+              }
+            ]
+          },
+          {
+            "name": "ChatGPT",
+            "accent": "chatgpt",
+            "bestFor": "범용 초안, 표·파일 분석, 이미지와 음성.",
+            "caution": "개인 계정(Free·Plus·Pro)은 학습 사용이 기본으로 켜져 있습니다. 설정 → 데이터 제어 → '모두를 위한 모델 개선'을 끄세요.",
+            "sources": [
+              {
+                "title": "OpenAI 데이터 제어 FAQ",
+                "url": "https://help.openai.com/en/articles/7730893-data-controls-faq"
+              }
+            ]
+          },
+          {
+            "name": "Gemini (앱)",
+            "accent": "gemini",
+            "bestFor": "Google Docs·Gmail·Drive와 연결한 요약과 초안.",
+            "caution": "학교 Google Workspace for Education 계정은 사람 검토와 모델 학습에 쓰지 않습니다. 개인 계정은 'Gemini 앱 활동' 설정을 확인하세요.",
+            "sources": [
+              {
+                "title": "Google: 교육용 Gemini 데이터 보호",
+                "url": "https://blog.google/products-and-platforms/products/education/gemini-enterprise-grade-data-protection/"
+              }
+            ]
+          },
+          {
+            "name": "뤼튼",
+            "accent": "wrtn",
+            "bestFor": "한국어 화면에서 여러 모델을 무료로 써 보기.",
+            "caution": "어떤 모델이 답했는지 분명하지 않을 수 있습니다. 약관과 데이터 설정을 직접 확인하세요.",
+            "sources": [
+              {
+                "title": "wrtn.ai",
+                "url": "https://wrtn.ai"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "grounded",
+        "title": "내 문서만 근거로",
+        "basis": "내가 올린 파일 안에서만 답하고, 답마다 출처를 표시합니다.",
+        "tools": [
+          {
+            "name": "Gemini Notebook (구 NotebookLM)",
+            "accent": "notebook",
+            "bestFor": "논문·강의평가·규정 파일을 올려 그 안에서만 답을 받기. 답의 번호를 누르면 원문 위치가 열립니다. 오디오 요약도 만듭니다.",
+            "caution": "올린 자료 밖의 지식은 약합니다. 스캔 PDF는 글자가 제대로 읽혔는지 확인하세요. 제품 안내상 업로드 자료로 모델을 학습하지 않습니다.",
+            "sources": [
+              {
+                "title": "Google Workspace: NotebookLM",
+                "url": "https://workspace.google.com/products/notebooklm/"
+              },
+              {
+                "title": "Google 블로그: 이름 변경",
+                "url": "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/"
+              }
+            ]
+          },
+          {
+            "name": "Claude·ChatGPT 프로젝트",
+            "accent": "claude",
+            "bestFor": "과목별 자료를 묶어 두고 같은 질문을 반복해서 쓰기.",
+            "caution": "출처 표시는 Gemini Notebook보다 약합니다. 학습 설정은 위의 개인 계정 설정과 같습니다.",
+            "sources": []
+          }
+        ]
+      },
+      {
+        "id": "search",
+        "title": "웹·논문 검색",
+        "basis": "웹이나 학술 데이터베이스를 찾아 답합니다. 없는 논문이나 틀린 수치가 섞일 수 있습니다.",
+        "tools": [
+          {
+            "name": "Perplexity",
+            "accent": "search",
+            "bestFor": "출처 링크가 달린 웹 검색 답변. 최신 정책·뉴스 찾기.",
+            "caution": "무료·Pro 모두 'AI data retention'이 기본으로 켜져 있습니다. 설정에서 끄거나 시크릿 모드를 쓰세요.",
+            "sources": [
+              {
+                "title": "Perplexity 데이터 수집 안내",
+                "url": "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity"
+              }
+            ]
+          },
+          {
+            "name": "Consensus",
+            "accent": "search",
+            "bestFor": "'이 질문에 연구들은 예·아니오·혼재 중 무엇인가'를 요약하고 저널로 거르기.",
+            "caution": "질문형으로 물어야 잘 됩니다. 요약만 보고 인용하지 마세요.",
+            "sources": [
+              {
+                "title": "consensus.app",
+                "url": "https://consensus.app"
+              }
+            ]
+          },
+          {
+            "name": "Elicit",
+            "accent": "search",
+            "bestFor": "논문을 찾고 항목을 뽑아 문헌 검토 표 만들기.",
+            "caution": "무료는 추출 열과 리포트 수가 제한됩니다. 뽑힌 수치는 원문 쪽수와 대조하세요.",
+            "sources": [
+              {
+                "title": "elicit.com",
+                "url": "https://elicit.com"
+              }
+            ]
+          },
+          {
+            "name": "SciSpace",
+            "accent": "search",
+            "bestFor": "논문 PDF와 대화하며 어려운 문단 설명 듣기.",
+            "caution": "무료로 쓸 수 있는 범위는 사이트에서 확인하세요.",
+            "sources": [
+              {
+                "title": "scispace.com",
+                "url": "https://scispace.com"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "school",
+        "title": "학교 계정으로 쓰는 도구",
+        "basis": "기관 약관이 적용되어 자료 보호가 가장 확실합니다. 학교가 어떤 계정을 쓰는지 전산원에 먼저 확인하세요.",
+        "tools": [
+          {
+            "name": "Copilot Chat (학교 Microsoft 365 계정)",
+            "accent": "copilot",
+            "bestFor": "Word·Outlook·Teams 안에서 초안과 요약. 학교 A1·A3·A5 라이선스 계정이면 무료입니다.",
+            "caution": "개인 Microsoft 계정의 Copilot과 헷갈리기 쉽습니다. 화면의 방패 아이콘이나 '보호됨' 표시를 확인하세요. 기업용 데이터 보호가 적용되어 기초 모델 학습에 쓰지 않습니다.",
+            "sources": [
+              {
+                "title": "Microsoft: 기업용 데이터 보호",
+                "url": "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+              }
+            ]
+          },
+          {
+            "name": "Gemini·Gemini Notebook (학교 Google 계정)",
+            "accent": "gemini",
+            "bestFor": "학교 Docs·Gmail·Drive 안에서 요약과 초안.",
+            "caution": "학교가 Google Workspace for Education을 쓰는지 먼저 확인하세요. 교육용 핵심 서비스로 제공되면 사람 검토와 모델 학습에 쓰지 않습니다.",
+            "sources": [
+              {
+                "title": "Google Workspace 업데이트",
+                "url": "https://workspaceupdates.googleblog.com/2025/04/notebookLM-and-gemini-app-core-services-for-education-customers.html"
+              },
+              {
+                "title": "Google Workspace 개인정보 허브",
+                "url": "https://knowledge.workspace.google.com/admin/generative-ai/generative-ai-in-google-workspace-privacy-hub"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "table": {
+      "source": "제작자료/pptx-v2.0/tool-table.json (deck 13장과 같은 자료)",
+      "checked": "2026-09 (design-brief 조사) / 2026-10-01 정리",
+      "note": "요금·한도·학습 설정은 자주 바뀝니다. 쓰기 전에 각 서비스 화면에서 확인하세요. 학교 계정이 없으면 개인 계정 + 학습 설정 끄기.",
+      "footnotes": {
+        "¹": "업로드 자료로 학습하지 않는다는 제품 안내 기준"
+      },
+      "columns": [
+        "도구",
+        "답의 근거",
+        "잘하는 일",
+        "약한 곳",
+        "무료",
+        "학습 설정"
+      ],
+      "rows": [
+        {
+          "tool": "Gemini Notebook",
+          "alias": "구 NotebookLM",
+          "accent": "notebook",
+          "basis": "올린 자료만",
+          "good": "논문·규정 비교",
+          "weak": "자료 밖 질문",
+          "free": "있음",
+          "training": "학습 안 함¹",
+          "trainingNote": "업로드 자료로 학습하지 않는다고 제품 안내에 명시. 교육 계정은 Workspace for Education 약관 적용.",
+          "sources": [
+            "https://workspace.google.com/products/notebooklm/",
+            "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/"
+          ]
+        },
+        {
+          "tool": "Claude",
+          "alias": "",
+          "accent": "claude",
+          "basis": "모델 지식",
+          "good": "긴 글 정리·초안",
+          "weak": "올린 자료 밖 최신 정보",
+          "free": "있음",
+          "training": "개인: 끌 수 있음",
+          "trainingNote": "개인(Free/Pro/Max)은 2025-08-28부터 'Claude 개선에 참여' 선택. 켜면 최대 5년 보관 → 끄기 안내. 기관 계약(Claude for Education)은 학습 미사용.",
+          "sources": [
+            "https://www.anthropic.com/news/updates-to-our-consumer-terms"
+          ]
+        },
+        {
+          "tool": "Gemini",
+          "alias": "",
+          "accent": "gemini",
+          "basis": "모델+Google",
+          "good": "문서·메일 연동",
+          "weak": "계정마다 다름",
+          "free": "있음",
+          "training": "설정에서 직접 확인",
+          "trainingNote": "학교 Workspace for Education 계정은 사람 검토·학습 없음(Core Service). 개인 계정 기본값은 설정에서 직접 확인.",
+          "sources": [
+            "https://blog.google/products-and-platforms/products/education/gemini-enterprise-grade-data-protection/"
+          ]
+        },
+        {
+          "tool": "ChatGPT",
+          "alias": "",
+          "accent": "chatgpt",
+          "basis": "모델 지식",
+          "good": "범용 초안·분석",
+          "weak": "개인 계정은 학습 기본 켜짐",
+          "free": "있음",
+          "training": "기본 켜짐→끄기",
+          "trainingNote": "개인 Free/Plus/Pro는 기본 켜짐. 설정 > 데이터 제어 > '모두를 위한 모델 개선' 끄기.",
+          "sources": [
+            "https://help.openai.com/en/articles/7730893-data-controls-faq"
+          ]
+        },
+        {
+          "tool": "Copilot",
+          "alias": "",
+          "accent": "copilot",
+          "basis": "모델+M365",
+          "good": "Word·메일 안",
+          "weak": "개인판과 혼동",
+          "free": "학교 계정",
+          "training": "학교: 학습 안 함",
+          "trainingNote": "학교 M365 계정(A1/A3/A5)의 Copilot Chat은 enterprise data protection 적용, 기초 모델 학습 미사용. 개인 MS 계정판과 구별(방패 표시).",
+          "sources": [
+            "https://learn.microsoft.com/en-us/microsoft-365/copilot/enterprise-data-protection"
+          ]
+        },
+        {
+          "tool": "Perplexity·Consensus·Elicit",
+          "alias": "",
+          "accent": "search",
+          "basis": "웹·논문 DB",
+          "good": "출처 달린 검색",
+          "weak": "요약만 믿기",
+          "free": "있음",
+          "training": "Perplexity: 끄기",
+          "trainingNote": "Perplexity는 무료·Pro 모두 'AI data retention' 기본 켜짐 → 끄기. Consensus·Elicit 무료 한도는 서비스에서 확인.",
+          "sources": [
+            "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity",
+            "https://consensus.app",
+            "https://elicit.com"
+          ]
+        },
+        {
+          "tool": "뤼튼",
+          "alias": "",
+          "accent": "wrtn",
+          "basis": "여러 모델",
+          "good": "한국어 체험",
+          "weak": "모델 불분명",
+          "free": "있음",
+          "training": "설정에서 직접 확인",
+          "trainingNote": "약관과 학습 설정은 서비스에서 직접 확인.",
+          "sources": [
+            "https://wrtn.ai"
+          ]
+        }
+      ],
+      "excluded": [
+        {
+          "tool": "클로바X",
+          "reason": "2026-04-09 서비스 종료",
+          "source": "https://zdnet.co.kr/view/?no=20260225180559"
+        }
+      ]
+    }
+  },
+  "tomorrow": {
+    "title": "내일 해 볼 업무 하나",
+    "lead": "오늘 쓴 방법을 교수님 업무 하나에 옮겨 봅니다. 작게 시작하고, 확인할 곳 하나를 정해 둡니다.",
+    "ideas": [
+      {
+        "text": "이번 주 학생 메일을 유형별로 나누기",
+        "tool": "claude"
+      },
+      {
+        "text": "다음에 읽을 논문 3편을 한 표로 비교하기",
+        "tool": "notebook"
+      },
+      {
+        "text": "지난 학기 서술형 강의평가를 주제별로 세기",
+        "tool": "claude"
+      },
+      {
+        "text": "다음 학기 강의계획서에 AI 사용 원칙 넣기",
+        "tool": "gemini"
+      },
+      {
+        "text": "학과 회의 메모에서 결정·담당·기한 표 만들기",
+        "tool": "gemini"
+      }
+    ],
+    "checklist": [
+      "이름·학번·연락처를 먼저 지웁니다.",
+      "학교 계정 도구를 씁니다. 없으면 개인 계정에서 학습 설정을 끄고 씁니다.",
+      "결과에서 날짜와 숫자 하나를 골라 원문과 맞춰 봅니다."
+    ]
+  }
 }

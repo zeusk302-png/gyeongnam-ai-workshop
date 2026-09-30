@@ -238,14 +238,26 @@ button{font-family:inherit}
 .poll li strong{display:block;font-size:20px}
 .poll li span{display:block;font-size:17px;font-weight:500;color:var(--ink-2);line-height:1.5;margin-top:4px}
 
+/* real cases */
+.case{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent-strong);border-radius:var(--radius);padding:24px 28px;margin-bottom:20px;max-width:var(--wide)}
+.case h3{font-size:24px;margin-bottom:16px}
+.case-figures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.case-figures div{background:#F7F4EE;border-radius:12px;padding:14px 18px}
+.case-figures strong{display:block;font-size:44px;font-weight:800;line-height:1.1;letter-spacing:-.03em;color:var(--accent-strong)}
+.case-figures span{display:block;font-size:17px;line-height:1.5;font-weight:600}
+.case p{max-width:var(--measure)}
+.case-limit{font-size:17px;color:var(--ink-2)}
+
 /* compare table */
 .table-wrap{overflow-x:auto;max-width:var(--wide);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
 .compare-table{border-collapse:collapse;width:100%;min-width:900px}
 .compare-table th,.compare-table td{text-align:left;vertical-align:top;padding:14px 14px;border-bottom:1px solid var(--line);font-size:16px;line-height:1.55}
 .compare-table thead th{background:#F0ECE4;font-size:16px;font-weight:800;white-space:nowrap}
-.compare-table tbody th{font-size:17px;font-weight:750;width:170px;border-left:6px solid var(--tool)}
+.compare-table tbody th{font-size:17px;font-weight:750;width:190px;border-left:6px solid var(--tool)}
+.compare-table td{font-size:17px;min-width:96px}
+.compare-table td:last-child{width:36%;font-size:16px}
 .compare-table tbody tr:last-child th,.compare-table tbody tr:last-child td{border-bottom:0}
-.compare-table .dot{display:none}
+.compare-table tbody th small,.compare-table td small{display:block;font-size:15px;font-weight:500;color:var(--ink-2);margin-top:4px;line-height:1.5}
 .compare-table td:nth-child(2){font-weight:650;color:var(--tool)}
 .compare-table tr[data-tool="chatgpt"] td:nth-child(2),.compare-table tr[data-tool="wrtn"] td:nth-child(2),.compare-table tr[data-tool="copilot"] td:nth-child(2){color:var(--ink)}
 .compare-how{margin-top:16px;font-size:18px;max-width:var(--wide)}
@@ -354,7 +366,7 @@ body.slide-focus .page{max-width:none}
   .cards,.poll,.split,.formula,.tool-grid,.pager{grid-template-columns:1fr}
   .timeline a,.timeline .tl-row{grid-template-columns:1fr;gap:6px}
   .funnel{flex-direction:column}.funnel-arrow{display:none}
-  .result-grid{grid-template-columns:1fr}
+  .result-grid,.case-figures{grid-template-columns:1fr}
   .task-box dl{grid-template-columns:1fr}
   .profile{grid-template-columns:1fr}
   .career li{grid-template-columns:1fr;gap:4px}

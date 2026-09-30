@@ -130,6 +130,17 @@ function homePage() {
   </div>`;
 }
 
+function casesSection(page) {
+  const w = course.whyAi, list = (w.cases || []).filter(c => (c.on || ['why-ai']).includes(page));
+  if (!list.length) return '';
+  return `<section class="section" id="real-cases"><h2>${esc(page === 'why-ai' ? w.casesTitle : '실제 설문으로 보면')}</h2>${list.map(c => `<article class="case">
+    <h3>${esc(c.title)}</h3>
+    <div class="case-figures">${(c.figures || []).map(f => `<div><strong>${esc(f.n)}</strong><span>${esc(f.label)}</span></div>`).join('')}</div>
+    <p>${esc(c.text)}</p>${c.limit ? `<p class="case-limit">한계 · ${esc(c.limit)}</p>` : ''}
+    <p class="sources">출처 ${(c.sources || []).map(x => external(x.url, x.title)).join('')}</p></article>`).join('')}
+    ${w.casesChecked ? `<p class="checked">${esc(w.casesChecked)}</p>` : ''}</section>`;
+}
+
 function whyAiPage() {
   const w = course.whyAi, r = w.result, max = Math.max(...r.types.map(x => x[1]));
   const minutes = r.rehearsal.minutes ?? '___';
@@ -150,7 +161,7 @@ function whyAiPage() {
     <div class="human-side"><h3>${esc(w.split.human.title)}</h3><ul>${w.split.human.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
   </div></section>
 
-  ${w.cases?.length ? `<section class="section" id="real-cases"><h2>${esc(w.casesTitle)}</h2><div class="cards">${w.cases.map(c => `<article class="card"><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p>${c.source ? `<span class="sources">출처 ${external(c.source.url, c.source.title)}</span>` : ''}</article>`).join('')}</div></section>` : '<!-- 실제 사례(출처 포함): lesson-data.json whyAi.cases 에 추가하면 여기에 표시됩니다 -->'}
+  ${casesSection('why-ai')}
 
   <section class="section"><h2>${esc(w.poll.question)}</h2><ul class="poll">${w.poll.items.map(x => `<li><strong>${esc(x.title || x)}</strong>${x.text ? `<span>${esc(x.text)}</span>` : ''}</li>`).join('')}</ul></section>
 
@@ -176,6 +187,7 @@ function practicePage(id) {
   <header class="lesson-head"><div class="lesson-meta"><span class="chip solid" data-tool="${tool}">${esc(toolLabel)}</span><span class="time">${esc(range)}${mins ? ' · ' + mins : ''}</span></div>
     <h1>${esc(fixName(s.title))}</h1><p class="lead">${esc(s.goal)}</p></header>
 
+  ${casesSection(id)}
   <section class="task-box"><h2>이번에 할 일</h2><dl>
     <dt>시간</dt><dd>${esc(range)}${mins ? ` (${mins})` : ''}</dd>
     <dt>도구</dt><dd>${esc(toolLabel)} · ${openLinks.map(o => external(o.url, (o.short || o.name) + ' 열기')).join(' · ')}</dd>
@@ -196,10 +208,12 @@ function toolComparisonPage() {
   return `<div class="page">
   <header class="lesson-head" data-tool="search"><div class="lesson-meta"><span class="chip" data-tool="search">도구 지도</span><span class="time">${TIMES['tool-comparison']}</span></div>
     <h1>${esc(c.title)}</h1><p class="lead">${esc(c.lead)}</p></header>
-  <section class="section compare"><h2>한눈에 비교</h2>
+  <section class="section compare"><h2>한눈에 비교</h2>${c.table.note ? `<p>${esc(c.table.note)}</p>` : ''}
     <div class="table-wrap"><table class="compare-table"><thead><tr>${c.table.columns.map(x => `<th scope="col">${esc(x)}</th>`).join('')}</tr></thead><tbody>
-    ${c.table.rows.map(r => `<tr data-tool="${r.accent}"><th scope="row"><span class="dot"></span>${esc(r.tool)}</th><td>${esc(r.basis)}</td><td>${esc(r.good)}</td><td>${esc(r.weak)}</td><td>${esc(r.free)}</td><td>${esc(r.training)}</td></tr>`).join('')}
+    ${c.table.rows.map(r => `<tr data-tool="${r.accent}"><th scope="row">${esc(r.tool)}${r.alias ? `<small>(${esc(r.alias)})</small>` : ''}</th><td>${esc(r.basis)}</td><td>${esc(r.good)}</td><td>${esc(r.weak)}</td><td>${esc(r.free)}</td><td><strong>${esc(r.training)}</strong>${r.trainingNote ? `<small>${esc(r.trainingNote)}</small>` : ''}</td></tr>`).join('')}
     </tbody></table></div>
+    ${Object.entries(c.table.footnotes || {}).map(([k, v]) => `<p class="checked">${esc(k)} ${esc(v)}</p>`).join('')}
+    ${(c.table.excluded || []).map(x => `<p class="checked">목록에서 뺌: ${esc(x.tool)} — ${esc(x.reason)} (${external(x.source, '출처')})</p>`).join('')}
     ${s ? `<p class="compare-how"><strong>고르는 순서</strong> ${s.steps.map((x, i) => `${'①②③'[i] || ''} ${esc(x)}`).join(' ')}</p>` : ''}</section>
   <h2 class="section" style="margin-bottom:0">도구별 자세히</h2>
   ${c.groups.map(g => `<section class="group"><div class="group-head"><h2>${esc(g.title)}</h2></div><p class="group-basis">${esc(g.basis)}</p>
