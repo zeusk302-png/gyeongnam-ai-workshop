@@ -47,6 +47,7 @@ function bindExtras() {
   document.querySelector('#slide-focus')?.addEventListener('click',()=>{document.body.classList.toggle('slide-focus');render();});
 }
 document.addEventListener('keydown',event=>{
+  if(currentId==='slides'&&event.key==='Escape'&&document.body.classList.contains('slide-focus')){event.preventDefault();document.body.classList.remove('slide-focus');render();return;}
   if(currentId!=='slides'||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName)||event.altKey||event.ctrlKey||event.metaKey)return;
   if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
     event.preventDefault();slidePage=Math.min(Math.max(slidePage+(event.key==='ArrowRight'?1:-1),0),slideDeck.slides.length-1);render();

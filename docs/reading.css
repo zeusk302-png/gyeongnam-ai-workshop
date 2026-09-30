@@ -90,3 +90,19 @@ h1,.lesson-head h1{font-size:34px;line-height:1.35;letter-spacing:-.035em;word-b
 @media(max-width:1100px) and (min-width:781px){:root{--sidebar:244px}main{padding:30px}.course-hero{grid-template-columns:1fr}.hero-agenda{display:none}.course-overview{grid-template-columns:1fr}}
 @media(max-width:780px){body{font-size:17px}main{padding:26px 22px 60px}.lead,.hero-copy .lead{font-size:18px}.workspace-top{margin-bottom:22px}.workspace-time{display:none}.lesson-head h1{font-size:29px}.hero-copy h1{font-size:42px}.section h2{font-size:23px}.lesson-stages{scroll-margin-top:74px}.lesson-stages button{font-size:15px;gap:6px;padding:16px 3px}.lesson-stages button span{width:21px;height:21px;font-size:12px}.work-brief{padding:21px}.actions li,.prompt-card pre,.checklist li,.callout,.policy-note,.result-box,.work-brief dd,.material-intro p,details>p{font-size:17px}.prompt-card pre{padding:20px;max-height:240px}.prompt-head{padding:13px 16px;gap:12px}.prompt-head strong{font-size:16px}.prompt-footer{padding:12px 16px;display:block}.prompt-footer .text-button{margin-top:8px}.course-hero{grid-template-columns:1fr;gap:0}.hero-agenda{display:none}.module-card{display:block;padding:23px}.module-card p{font-size:17px}.module-link{margin-top:18px}.course-stats{display:none}.source-row{gap:10px}.download-list a strong{font-size:16px}.source-row .download-list .download-icon{display:none}.source-row .download-list a{gap:8px}.source-row>.text-button{min-width:70px;font-size:14px}.download-list a small{display:none}.note,.footer-note{font-size:14px}.lesson-stage .section-heading{align-items:flex-start;flex-wrap:wrap;gap:15px}.source-row>.download-list{overflow-wrap:anywhere}.measure-scope,.measure-grid fieldset{gap:12px}.comparison-record label{font-size:14px}.review-more{padding:18px}.timeline td{font-size:16px}.workspace-path{font-size:14px}.primary,.secondary,.copy,.complete{font-size:15px}}
 @media print{.lesson-stage[hidden]{display:block!important}.lesson-stages,.stage-next,.source-row>.text-button{display:none}body{font-size:11pt}.lesson-stage{break-before:auto}main{max-width:none;padding:0}.slide-focus main{max-width:none}.review-more{break-inside:auto}}
+
+/* Project the slide without the download list or presenter notes. */
+body.slide-focus{background:#202920;min-height:100dvh}
+.slide-focus main{max-width:none;padding:16px 24px 24px}
+.slide-focus main>.teaching-actions{justify-content:flex-end;margin-bottom:10px}
+.slide-focus main>.teaching-actions>a,.slide-focus main>.download-list,
+.slide-focus .slide-stage>details,.slide-focus .slide-stage>p,.slide-focus figcaption{display:none}
+.slide-focus .slide-controls{margin-bottom:12px;gap:10px}
+.slide-focus .slide-controls select{background:#202920;color:#f4f0e7;border-color:#75806f;padding:9px 14px}
+.slide-focus .slide-stage figure{margin-bottom:12px}
+.slide-focus .slide-image{height:calc(100dvh - 200px);max-height:none;border:0;background:transparent}
+.slide-focus .slide-stage>.primary{padding:8px 16px;min-height:40px;background:#f4f0e7;color:#202920}
+.slide-focus .slide-stage>.primary .icon{filter:none}
+.slide-focus .secondary{background:#202920;border-color:#75806f;color:#f4f0e7;min-height:40px;padding:8px 16px}
+@media(max-width:780px){.slide-focus main{padding:12px}.slide-focus .slide-image{height:auto;max-height:calc(100dvh - 250px)}.slide-focus .slide-controls select{font-size:14px}}
+@media print{body.slide-focus{background:white}.slide-focus .slide-image{height:auto}}
