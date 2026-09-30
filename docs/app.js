@@ -18,18 +18,18 @@ const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\
 const external = (url, text) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)} ↗</a>`;
 
 /* ---------- route model ---------- */
-const ORDER = ['orientation', 'instructor', 'why-ai', 'demo-email', 'tool-comparison', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'student-ai-use', 'tomorrow', 'free-guide', 'resources'];
-const COURSE_NAV = ['why-ai', 'demo-email', 'tool-comparison', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'student-ai-use', 'tomorrow'];
+const ORDER = ['orientation', 'instructor', 'why-ai', 'demo-email', 'tool-comparison', 'ai-basics', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'assignment-review', 'tomorrow', 'free-guide', 'resources'];
+const COURSE_NAV = ['why-ai', 'demo-email', 'tool-comparison', 'ai-basics', 'notebooklm-papers', 'claude-evaluations', 'gemini-syllabus', 'assignment-review', 'tomorrow'];
 const LABELS = {
   'orientation': '수업 안내', 'instructor': '강사 소개', 'why-ai': '왜 AI인가', 'demo-email': '데모: 학생 메일 40통',
   'notebooklm-papers': '논문 5편 비교', 'claude-evaluations': '강의평가 180개', 'gemini-syllabus': '강의계획서·학칙 답장',
-  'student-ai-use': '학생의 AI 사용', 'tool-comparison': '도구 지도', 'tomorrow': '내일 해 볼 업무',
+  'assignment-review': 'AI·표절 의심 과제', 'ai-basics': 'AI 공통 원리', 'tool-comparison': '도구 지도', 'tomorrow': '내일 해 볼 업무',
   'slides': '강의 슬라이드', 'free-guide': '무료 계정 안내', 'resources': '자료실'
 };
-const TIMES = { 'why-ai': '0–15분', 'demo-email': '15–20분', 'tool-comparison': '20–25분', 'notebooklm-papers': '25–70분', 'claude-evaluations': '70–105분', 'gemini-syllabus': '115–150분', 'student-ai-use': '150–170분', 'tomorrow': '170–180분' };
+const TIMES = { 'why-ai': '0–15분', 'demo-email': '15–20분', 'tool-comparison': '20–25분', 'ai-basics': '25–33분', 'notebooklm-papers': '33–70분', 'claude-evaluations': '70–105분', 'gemini-syllabus': '115–150분', 'assignment-review': '150–170분', 'tomorrow': '170–180분' };
 const span = id => { const m = (TIMES[id] || '').match(/(\d+)–(\d+)/); return m ? (m[2] - m[1]) + '분' : ''; };
 const ROUTES = new Set([...ORDER, 'slides', 'free-guide']);
-const PROMPT_SECTIONS = { 1: 'demo-email', 2: 'notebooklm-papers', 3: 'claude-evaluations', 4: 'gemini-syllabus', 5: 'student-ai-use', 6: 'tomorrow' };
+const PROMPT_SECTIONS = { 1: 'demo-email', 2: 'notebooklm-papers', 3: 'claude-evaluations', 4: 'gemini-syllabus', 5: 'assignment-review', 6: 'tomorrow', 7: 'ai-basics' };
 const toolOf = id => course.sectionTools[id] || (id === 'tool-comparison' ? 'search' : '');
 const toolName = key => course.tools[key]?.name || '';
 
@@ -133,7 +133,7 @@ function homePage() {
 function casesSection(page) {
   const w = course.whyAi, list = (w.cases || []).filter(c => (c.on || ['why-ai']).includes(page));
   if (!list.length) return '';
-  return `<section class="section" id="real-cases"><h2>${esc(page === 'why-ai' ? w.casesTitle : '실제 설문으로 보면')}</h2>${list.map(c => `<article class="case">
+  return `<section class="section" id="real-cases"><h2>${esc(page === 'why-ai' ? w.casesTitle : '실제 자료로 보면')}</h2>${list.map(c => `<article class="case">
     <h3>${esc(c.title)}</h3>
     <div class="case-figures">${(c.figures || []).map(f => `<div><strong>${esc(f.n)}</strong><span>${esc(f.label)}</span></div>`).join('')}</div>
     <p>${esc(c.text)}</p>${c.limit ? `<p class="case-limit">한계 · ${esc(c.limit)}</p>` : ''}
@@ -177,7 +177,7 @@ function practicePage(id) {
   const s = practice.sections.find(x => x.id === id);
   const tool = toolOf(id);
   const book = promptBook[id];
-  const prompts = book?.items?.length ? book.items : [{ title: '복사할 질문', prompt: s.prompt, check: '' }, ...(s.followups || [])];
+  const prompts = book?.items?.length ? book.items : [...(s.prompt ? [{ title: '복사할 질문', prompt: s.prompt, check: '' }] : []), ...(s.followups || [])];
   const t = course.tools[tool];
   const toolLabel = tool === 'notebook' ? t.name : fixName(s.tool);
   const openLinks = tool === 'mixed' ? [course.tools.claude, course.tools.gemini] : [t];
@@ -191,7 +191,7 @@ function practicePage(id) {
   <section class="task-box"><h2>이번에 할 일</h2><dl>
     <dt>시간</dt><dd>${esc(range)}${mins ? ` (${mins})` : ''}</dd>
     <dt>도구</dt><dd>${esc(toolLabel)} · ${openLinks.map(o => external(o.url, (o.short || o.name) + ' 열기')).join(' · ')}</dd>
-    <dt>올릴 파일</dt><dd>${fileLinks(s.files)}</dd>
+    <dt>올릴 파일</dt><dd>${s.files?.length ? fileLinks(s.files) : '따로 없음 · 지금 쓰는 대화에 붙여 씁니다'}</dd>
   </dl></section>
 
   <section class="section"><h2>순서</h2><ol class="steps">${s.steps.map(x => `<li>${esc(fixName(x))}</li>`).join('')}</ol></section>
@@ -355,6 +355,7 @@ function renderNav() {
 function render() {
   let id = decodeURIComponent(location.hash.slice(1)) || 'orientation';
   if (id.startsWith('free-')) id = 'free-guide';
+  if (id === 'student-ai-use') id = 'assignment-review';
   if (!ROUTES.has(id)) id = 'orientation';
   const changed = id !== currentId;
   currentId = id;
